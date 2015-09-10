@@ -3,53 +3,62 @@ package solver.logic.algorithms;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.State;
 
+/*
+ * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen lähtötilasta
+ * tavoitetilaan IDA*-algoritmin avulla. Toteutus vielä kesken
+ */
 public class IDAStar {
-
-    private List<State> visitedStates;
     private ManhattanDistance manhattan;
     private int bound;
-    private State goal;
+    private int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    private boolean isFinished;
+    private State solution = null;
 
     public IDAStar() {
-        visitedStates = new List();
         manhattan = new ManhattanDistance();
     }
 
+    /**
+     * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
+     *
+     * @param start alkutila
+     * @return saavutettu ratkaisutila. Jos ratkaisua ei saavutettu, palauttaa
+     * null-arvon
+     */
     public State solve(State start) {
-        State solution = null;
+        isFinished = false;
         bound = manhattan.getDistance(start);
 
-        while (solution == null) {
-            visitedStates.add(start);
-            solution = search(start);
-            visitedStates.tyhjenna();
+        while (!isFinished) {
+            search(start);
         }
-
+        
         return solution;
     }
 
-    private State search(State current) {
-        State solution = null;
+    private void search(State current) {
+        int totalCost = manhattan.getDistance(current) + current.getCost();
 
-        for (State state : current.nextStates()) {
-            if (state.equals(goal)) {
-                state.setPrevious(current);
-                return state;
-            }
+        if (totalCost > bound) {
+            bound = totalCost;
+            return;
+        }
 
-            if (!visitedStates.contains(state)) {
+        if (manhattan.getDistance(current) == 0) {
+            solution = current;
+            return;
+        }
+
+        for (int i = 0; i < directions.length; i++) {
+            if (current.move(directions[i][0], directions[i][1])) {
+                State state = new State(current.values());
                 state.setCost(current.getCost() + 1);
-                state.setPrevious(current);
-                
-                int totalCost = manhattan.getDistance(state) + state.getCost();
-                if (totalCost <= bound) {
-                    visitedStates.add(state);
-                    solution = search(state);
-                } else {
-                    bound = totalCost;
+                search(current);
+                if (isFinished) {
+                    return;
                 }
+                current.move(-1*directions[i][0], -1*directions[i][1]);
             }
         }
-        return solution;
     }
 }

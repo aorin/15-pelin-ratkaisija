@@ -3,6 +3,9 @@ package solver.logic.algorithms;
 import solver.logic.domain.State;
 import solver.logic.dataStructures.Map;
 
+/**
+ * Luokka sisältää toiminnallisuuden tilan Manhattan-etäisyyden laskemiseen.
+ */ 
 public class ManhattanDistance {
     private Map<Integer, Integer[]> goalPositions;
 
@@ -21,6 +24,11 @@ public class ManhattanDistance {
         }
     }
 
+/**
+ * Metodi laskee ja palauttaa tilan Manhattan-etäisyyden.
+ * 
+ * @return tilan Manhattan-etäisyys
+ */
     public int getDistance(State state) {
         int sum = 0;
         int[][] values = state.values();
