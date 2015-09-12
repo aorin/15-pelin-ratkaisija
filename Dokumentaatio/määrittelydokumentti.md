@@ -21,3 +21,4 @@ IDA*:n ja samalla koko algoritmin tilavaativuus on lineaarinen, O(bd), missä b 
 https://en.wikipedia.org/wiki/15_puzzle
 https://en.wikipedia.org/wiki/Iterative\_deepening_A*
 https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
+http://heuristicswiki.wikispaces.com/Manhattan+Distance

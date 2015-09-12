@@ -30,35 +30,37 @@ public class IDAStar {
         bound = manhattan.getDistance(start);
 
         while (!isFinished) {
-            search(start);
+            bound = search(start);
         }
         
         return solution;
     }
 
-    private void search(State current) {
+    private int search(State current) {
         int totalCost = manhattan.getDistance(current) + current.getCost();
 
         if (totalCost > bound) {
-            bound = totalCost;
-            return;
+            return totalCost;
         }
 
         if (manhattan.getDistance(current) == 0) {
             solution = current;
-            return;
+            return 0;
         }
 
+        int min = Integer.MAX_VALUE;
         for (int i = 0; i < directions.length; i++) {
             if (current.move(directions[i][0], directions[i][1])) {
                 State state = new State(current.values());
                 state.setCost(current.getCost() + 1);
-                search(current);
+                min = Math.min(min, search(current));
                 if (isFinished) {
-                    return;
+                    return 0;
                 }
                 current.move(-1*directions[i][0], -1*directions[i][1]);
             }
         }
+        
+        return min;
     }
 }

@@ -15,13 +15,13 @@ public class ManhattanDistanceTest {
     
     @Test
     public void haveRightGoalPosition() {
-        State state = new State(new int[][]{{0, 4, 8, 12}, {1, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 15}});
+        State state = new State(new int[][]{{1, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 15}, {4, 8, 12, 0}});
         assertEquals(0, calculator.getDistance(state));
     }
     
     @Test
     public void calculatesCorrectValue() {
-        State state = new State(new int[][]{{10, 4, 8, 12}, {1, 5, 9, 13}, {2, 6, 0, 14}, {3, 7, 11, 15}});
-        assertEquals(8, calculator.getDistance(state));
+        State state = new State(new int[][]{{15, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 1}, {4, 8, 0, 12}});
+        assertEquals(11, calculator.getDistance(state));
     }
 }
