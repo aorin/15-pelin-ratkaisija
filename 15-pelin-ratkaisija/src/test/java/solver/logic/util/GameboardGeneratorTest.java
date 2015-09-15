@@ -1,28 +1,25 @@
 package solver.logic.util;
 
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import solver.logic.dataStructures.List;
 
 public class GameboardGeneratorTest {
-
     private GameboardGenerator g;
 
-    @Before
-    public void setUp() {
+    public GameboardGeneratorTest() {
         g = new GameboardGenerator();
     }
 
     @Test
     public void returns4x4Array() {
-        int[][] array = g.generate();
+        int[][] array = g.generate4x4();
         assertTrue(array.length == 4 && array[0].length == 4);
     }
 
     @Test
     public void arrayContainsAllNumbers() {
-        int[][] array = g.generate();
+        int[][] array = g.generate4x4();
         List list = new List();
 
         for (int i = 0; i < array.length; i++) {
@@ -38,8 +35,8 @@ public class GameboardGeneratorTest {
 
     @Test
     public void positionsOfNumbersDiffers() {
-        int[][] array1 = g.generate();
-        int[][] array2 = g.generate();
+        int[][] array1 = g.generate4x4();
+        int[][] array2 = g.generate4x4();
 
         boolean identical = true;
         for (int i = 0; i < array1.length; i++) {
@@ -49,7 +46,7 @@ public class GameboardGeneratorTest {
                 }
             }
         }
-        
+
         assertTrue(!identical);
     }
 }

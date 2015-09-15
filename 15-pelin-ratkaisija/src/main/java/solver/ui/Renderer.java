@@ -4,15 +4,25 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JPanel;
-import solver.logic.domain.State;
+import solver.logic.domain.Puzzle;
 
+/**
+ * Luokka sisältää toiminnallisuuden numeroiden piirtämiseen näytölle.
+ */
 public class Renderer extends JPanel {
-    private State gameState;
+    private Puzzle puzzle;
     private int sideLenght;
+    private int n;
     
-    public Renderer (State gameState, int sideLenght) {
-        this.gameState = gameState;
+    /**
+     * Konstruktorissa piirtäjälle annetaan käytetty pelilauta ja haluttu yhden ruudun leveys.
+     * @param puzzle Käytössä oleva peli
+     * @param sideLenght Ruudun leveys
+     */
+    public Renderer (Puzzle puzzle, int sideLenght) {
+        this.puzzle = puzzle;
         this.sideLenght = sideLenght;
+        this.n = puzzle.n();
     }
     
     @Override
@@ -22,12 +32,12 @@ public class Renderer extends JPanel {
         g.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
         int x = 0, y = 0;
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < n; i++) {
             y = 0;
-            for (int j = 0; j < 4; j++) {
-                g.drawString("" + gameState.valueAtPoint(i, j), x  + sideLenght / 2, y  + sideLenght / 2);
+            for (int j = 0; j < n; j++) {
+                g.drawString("" + puzzle.valueAtPoint(i, j), x  + sideLenght / 2, y  + sideLenght / 2);
                 g.drawRect(x, y, sideLenght, sideLenght);
-                if (gameState.valueAtPoint(i, j) == 0) {
+                if (puzzle.valueAtPoint(i, j) == 0) {
                     g.fillRect(x, y, sideLenght, sideLenght);
                 }
                 y += sideLenght;

@@ -1,66 +1,80 @@
 package solver.logic.algorithms;
 
 import solver.logic.dataStructures.List;
-import solver.logic.domain.State;
+import solver.logic.domain.Move;
+import solver.logic.domain.Point;
+import solver.logic.domain.Puzzle;
 
-/*
+/**
  * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen lähtötilasta
- * tavoitetilaan IDA*-algoritmin avulla. Toteutus vielä kesken
+ * tavoitetilaan IDA*-algoritmin avulla.
  */
 public class IDAStar {
     private ManhattanDistance manhattan;
     private int bound;
-    private int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
     private boolean isFinished;
-    private State solution = null;
+    private Puzzle start;
+    private List<Move> moves;
 
-    public IDAStar() {
-        manhattan = new ManhattanDistance();
+    /**
+     * Konstruktori luo uuden IDA*-laskijan.
+     * @param puzzle Käytössä oleva pelitila
+     */
+    public IDAStar(Puzzle puzzle) {
+        this.manhattan = new ManhattanDistance(puzzle);
+        this.moves = new List<>();
+        this.start = puzzle;
     }
 
     /**
      * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
      *
-     * @param start alkutila
-     * @return saavutettu ratkaisutila. Jos ratkaisua ei saavutettu, palauttaa
-     * null-arvon
+     * @return siirrot, jotka käytettiin ratkaisun saavuttamiseen
      */
-    public State solve(State start) {
+    public List<Move> solve() {
+        moves.clear();
         isFinished = false;
-        bound = manhattan.getDistance(start);
+        bound = manhattan.getEstimate();
 
         while (!isFinished) {
             bound = search(start);
         }
-        
-        return solution;
+
+        return moves;
     }
 
-    private int search(State current) {
-        int totalCost = manhattan.getDistance(current) + current.getCost();
+    private int search(Puzzle current) {
+        int totalCost = manhattan.getEstimate() + current.getCost();
 
         if (totalCost > bound) {
             return totalCost;
         }
 
-        if (manhattan.getDistance(current) == 0) {
-            solution = current;
+        if (manhattan.getEstimate() == 0) {
+            isFinished = true;
             return 0;
         }
 
         int min = Integer.MAX_VALUE;
-        for (int i = 0; i < directions.length; i++) {
-            if (current.move(directions[i][0], directions[i][1])) {
-                State state = new State(current.values());
-                state.setCost(current.getCost() + 1);
-                min = Math.min(min, search(current));
+        for (Move move : Move.values()) {
+            if (current.move(move.getDx(), move.getDy())) {
+                Point posOfZero = current.positionOfZero();
+                current.setCost(current.getCost() + 1);
+                manhattan.update(posOfZero.getX(), posOfZero.getY(), posOfZero.getX() - move.getDx(), posOfZero.getY() - move.getDy());
+                int value = search(current);
+                min = Math.min(min, value);
+                
                 if (isFinished) {
+                    moves.add(move);
                     return 0;
                 }
-                current.move(-1*directions[i][0], -1*directions[i][1]);
+                
+                current.setCost(current.getCost() - 1);
+                current.move(-1 * move.getDx(), -1 * move.getDy());
+                manhattan.update(posOfZero.getX(), posOfZero.getY(), posOfZero.getX() + move.getDx(), posOfZero.getY() + move.getDy());
             }
         }
-        
+
         return min;
     }
 }

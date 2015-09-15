@@ -1,10 +1,21 @@
 package solver.logic.algorithms;
 
+import solver.logic.domain.Puzzle;
+
+/**
+ * Luokan tarjoaa toiminnallisuuden pelin ratkaistavuuden selvittämiseen.
+ */
 public class SolvabilityDeterminer {
     private int zerosRow;
 
-    public boolean puzzeIsSolvable(int[][] puzzle) {
-        int[] array = copyValuesToOneDimensionalArray(puzzle);
+/**
+ * Metodi selvittää onko sille parametrinä annettu peli mahdollista ratkaista.
+ * 
+ * @param puzzle peli, jonka ratkaistavuus halutaan selvittää
+ * @return true, jos peli on ratkaistavissa, muulloin false
+ */
+    public boolean puzzeIsSolvable(Puzzle puzzle) {
+        int[] array = copyValuesToOneDimensionalArray(puzzle.values());
         int inversions = 0;
 
         for (int i = 0; i < array.length; i++) {
@@ -13,7 +24,7 @@ public class SolvabilityDeterminer {
             }
         }
 
-        return (puzzle.length % 2 == 1 && inversions % 2 == 0) || (puzzle.length % 2 == 0 && ((inversions % 2 == 0) == (zerosRow % 2 == 1)));
+        return (puzzle.values().length % 2 == 1 && inversions % 2 == 0) || (puzzle.values().length % 2 == 0 && ((inversions % 2 == 0) == (zerosRow % 2 == 1)));
     }
 
     private int[] copyValuesToOneDimensionalArray(int[][] values) {

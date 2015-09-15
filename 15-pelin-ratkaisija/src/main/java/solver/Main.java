@@ -1,7 +1,7 @@
 package solver;
 
 import solver.logic.util.GameboardGenerator;
-import solver.logic.domain.State;
+import solver.logic.domain.Puzzle;
 import solver.ui.Window;
 import javax.swing.SwingUtilities;
 
@@ -10,11 +10,9 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
     public static void main(String[] args) {
-//        GameboardGenerator generator = new GameboardGenerator();
-//        State state = new State(generator.generate());
-        State state = new State(new int[][]{{15, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 1}, {4, 8, 0, 12}});
-        
-        Window window = new Window(state);
+        GameboardGenerator generator = new GameboardGenerator();
+        Puzzle puzzle = new Puzzle(generator.generate4x4());
+        Window window = new Window(puzzle, generator);
         SwingUtilities.invokeLater(window);
     }
 }

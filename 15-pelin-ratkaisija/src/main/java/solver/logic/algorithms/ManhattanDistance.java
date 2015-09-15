@@ -1,39 +1,65 @@
 package solver.logic.algorithms;
 
-import solver.logic.domain.State;
+import solver.logic.domain.Puzzle;
 import solver.logic.dataStructures.Map;
 
 /**
  * Luokka sisältää toiminnallisuuden tilan Manhattan-etäisyyden laskemiseen.
  */
 public class ManhattanDistance {
-
     private Map<Integer, Integer[]> goalPositions;
+    private int[][] values;
+    private int previousEstimate;
 
-    public ManhattanDistance() {
+    /**
+     * Konstruktori luo uuden Manhattan-etäisyys-laskijan annetun peliasetelman
+     * perusteella.
+     * @param puzzle Käytössä oleva peliasetelma
+     */
+    public ManhattanDistance(Puzzle puzzle) {
+        int n = puzzle.n();
         goalPositions = new Map<>();
 
         int j = 0, k = 0;
-        for (int i = 1; i < 16; i++) {
+        for (int i = 1; i < n * n; i++) {
             Integer[] t = {j, k};
             goalPositions.put(i, t);
             j++;
-            if (j > 3) {
+            if (j >= n) {
                 j = 0;
                 k++;
             }
         }
-        goalPositions.put(0, new Integer[]{j, k});
+
+        values = puzzle.values();
+        previousEstimate = getDistance();
     }
 
     /**
-     * Metodi laskee ja palauttaa tilan Manhattan-etäisyyden.
-     *
-     * @return tilan Manhattan-etäisyys
+     * Palauttaa asetelman Manhattan-etäisyyden.
+     * @return Peliasetelman Manhattan-etäisyys
      */
-    public int getDistance(State state) {
+    public int getEstimate() {
+        return this.previousEstimate;
+    }
+
+    /**
+     * Päivittää asetelman Manhattan-etäisyyden vastaamaan uutta tilannetta
+     * jonkun palan siirron jälkeen.
+     * 
+     * @param x1 Liikutetun palan vanha x-koordinaatti
+     * @param y1 Liikutetun palan vanha y-koordinaatti
+     * @param x2 Liikutetun palan uusi x-koordinaatti
+     * @param y2 Liikutetun palan uusi y-koordinaatti
+     */
+    public void update(int x1, int y1, int x2, int y2) {
+        Integer[] goalPos = goalPositions.get(values[x2][y2]);
+        previousEstimate -= abs(x1 - goalPos[0]) + abs(y1 - goalPos[1]);
+        previousEstimate += abs(x2 - goalPos[0]) + abs(y2 - goalPos[1]);
+    }
+
+    private int getDistance() {
         int sum = 0;
-        int[][] values = state.values();
 
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[i].length; j++) {

@@ -1,58 +1,61 @@
 package solver.logic.dataStructures;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+/**
+ * Luokka tarjoaa toiminnallisuuden olioiden listaamiseen.
+ * @param <T> Olion tyyppi 
+ */
+public class List<T> {
 
-public class List<T> implements Iterable<T> {
     private Object[] array;
-    private ArrayList<T> valiaikainenLista = new ArrayList<T>();
+    private int n;
 
+    /**
+     * Konstruktori luo uuden tyhjän listan.
+     */
     public List() {
         array = new Object[10];
+        n = 0;
     }
 
+    /**
+     * Metodi lisää lisättävän alkion listan perälle.
+     * @param value Lisättävä olio
+     */
     public void add(T value) {
-        valiaikainenLista.add(value);
+        if (n >= array.length) {
+            Object[] oldArray = array;
+            array = new Object[n * 10];
+            for (int i = 0; i < oldArray.length; i++) {
+                array[i] = oldArray[i];
+            }
+        }
+        array[n] = value;
+        n++;
     }
 
-    public void tyhjenna() {
-        valiaikainenLista.clear();
+    /**
+     * Metodi tyhjentää listan.
+     */
+    public void clear() {
+        array = new Object[10];
+        n = 0;
+    }
+
+    public T get(int i) {
+        return (T) array[i];
     }
 
     public boolean contains(T value) {
-//        for (int i = 0; i < luvut.length; i++) {
-//            if (luvut[i] == luku) {
-//                return true;
-//            }
-//        }
-//        
-//        return false;
-        return valiaikainenLista.contains(value);
-    }
-    
-    public int length() {
-        return valiaikainenLista.size();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        class Iteraattori<t> implements Iterator<T> {
-            @Override
-            public boolean hasNext() {
-                throw new UnsupportedOperationException("Not supported yet.");
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                return true;
             }
-
-            @Override
-            public T next() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
         }
-        return valiaikainenLista.iterator();
+        
+        return false;
+    }
+
+    public int length() {
+        return n;
     }
 }

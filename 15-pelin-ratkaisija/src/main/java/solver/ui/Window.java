@@ -6,7 +6,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.WindowConstants;
-import solver.logic.domain.State;
+import solver.logic.domain.Puzzle;
+import solver.logic.util.GameboardGenerator;
+import solver.ui.listeners.ChangeGameButtonListener;
 import solver.ui.listeners.NewGameButtonListener;
 import solver.ui.listeners.SolveButtonListener;
 
@@ -14,19 +16,25 @@ import solver.ui.listeners.SolveButtonListener;
  * Luokka luo käyttöliittymäikkunan ja ohjaa sen toimintaa.
  */
 public class Window implements Runnable {
-
+    private GameboardGenerator generator;
     private JFrame frame;
-    private State gameState;
+    private Puzzle puzzle;
     private Renderer renderer;
 
-    public Window(State state) {
-        this.gameState = state;
+    /**
+     * Konstruktorissa asetetaan käyttöliittymällä käytössä oleva peli 
+     * @param puzzle Käytössä oleva peliasetelma
+     * @param generator Uusien peliasetelmien generaattori
+     */
+    public Window(Puzzle puzzle, GameboardGenerator generator) {
+        this.puzzle = puzzle;
+        this.generator = generator;
     }
 
     @Override
     public void run() {
         frame = new JFrame("15-pelin ratkaisija");
-        frame.getContentPane().setPreferredSize(new Dimension(4 * 100 + 1, 4 * 100 + 1));
+        frame.getContentPane().setPreferredSize(new Dimension(puzzle.n() * 100 + 1, puzzle.n() * 100 + 1));
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -44,19 +52,29 @@ public class Window implements Runnable {
 
         JMenuItem newGame = new JMenuItem("Arvo uusi");
         JMenuItem solve = new JMenuItem("Ratkaise");
+        JMenuItem changeGame = new JMenuItem();
+        if (puzzle.values().length == 4) {
+            changeGame.setText("8-peli");
+        } else {
+            changeGame.setText("15-peli");
+        }
 
         menubar.add(newGame);
         menubar.add(solve);
+        menubar.add(changeGame);
 
-        NewGameButtonListener listener1 = new NewGameButtonListener(this);
+        NewGameButtonListener listener1 = new NewGameButtonListener(this, generator, puzzle.n());
         newGame.addActionListener(listener1);
 
-        SolveButtonListener listener2 = new SolveButtonListener(gameState);
+        SolveButtonListener listener2 = new SolveButtonListener(puzzle, renderer);
         solve.addActionListener(listener2);
+        
+        ChangeGameButtonListener listener3 = new ChangeGameButtonListener(this, generator, puzzle.n());
+        changeGame.addActionListener(listener3);
     }
 
     private void createComponents(Container container) {
-        renderer = new Renderer(gameState, 100);
+        renderer = new Renderer(puzzle, 100);
         container.add(renderer);
     }
 
@@ -67,10 +85,10 @@ public class Window implements Runnable {
     /**
      * Metodi päivittää käyttöliittymän vastaamaan metodina annettua pelitilaa.
      *
-     * @param gameState Uusi käytössä oleva pelitila.
+     * @param puzzle Uusi käytössä oleva pelitila.
      */
-    public void update(State gameState) {
-        this.gameState = gameState;
+    public void update(Puzzle puzzle) {
+        this.puzzle = puzzle;
         Container c = frame.getContentPane();
         c.removeAll();
         createComponents(c);
