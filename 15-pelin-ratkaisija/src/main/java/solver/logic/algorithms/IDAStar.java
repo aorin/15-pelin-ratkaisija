@@ -1,80 +1,86 @@
 package solver.logic.algorithms;
 
+import solver.logic.algorithms.heuristic.Heuristic;
+import solver.logic.algorithms.heuristic.ManhattanDistance;
+import solver.logic.algorithms.heuristic.ManhattanDistanceWithConflicts;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
 import solver.logic.domain.Point;
 import solver.logic.domain.Puzzle;
 
 /**
- * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen lähtötilasta
+ * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen n-pelin lähtötilasta
  * tavoitetilaan IDA*-algoritmin avulla.
  */
 public class IDAStar {
-    private ManhattanDistance manhattan;
+
+    private Heuristic heuristic;
     private int bound;
     private boolean isFinished;
-    private Puzzle start;
+    private Puzzle puzzle;
     private List<Move> moves;
 
     /**
      * Konstruktori luo uuden IDA*-laskijan.
+     *
      * @param puzzle Käytössä oleva pelitila
      */
     public IDAStar(Puzzle puzzle) {
-        this.manhattan = new ManhattanDistance(puzzle);
+        this.heuristic = new ManhattanDistance(puzzle);
         this.moves = new List<>();
-        this.start = puzzle;
+        this.puzzle = puzzle;
     }
 
     /**
      * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
      *
-     * @return siirrot, jotka käytettiin ratkaisun saavuttamiseen
+     * @return siirrot, joita käytettiin ratkaisun saavuttamiseen
      */
     public List<Move> solve() {
         moves.clear();
         isFinished = false;
-        bound = manhattan.getEstimate();
+        int estimate = heuristic.getEstimate();
+        bound = estimate;
 
         while (!isFinished) {
-            bound = search(start);
+            System.out.println("Etsitään syvyydeltä: " + bound);
+            bound = search(puzzle, null, 0, estimate);
         }
 
+        moves.reverse();
         return moves;
     }
 
-    private int search(Puzzle current) {
-        int totalCost = manhattan.getEstimate() + current.getCost();
+    private int search(Puzzle current, Move lastMove, int cost, int estimate) {
+        int totalCost = estimate + cost;
 
         if (totalCost > bound) {
             return totalCost;
         }
 
-        if (manhattan.getEstimate() == 0) {
+        if (estimate == 0) {
             isFinished = true;
             return 0;
         }
 
-        int min = Integer.MAX_VALUE;
+        int newBound = Integer.MAX_VALUE;
         for (Move move : Move.values()) {
-            if (current.move(move.getDx(), move.getDy())) {
+            if (current.canMove(move) && lastMove != move.getOpposite()) {
+                current.move(move);
                 Point posOfZero = current.positionOfZero();
-                current.setCost(current.getCost() + 1);
-                manhattan.update(posOfZero.getX(), posOfZero.getY(), posOfZero.getX() - move.getDx(), posOfZero.getY() - move.getDy());
-                int value = search(current);
-                min = Math.min(min, value);
                 
+                int newEstimate = heuristic.update(estimate, posOfZero.getX(), posOfZero.getY(), posOfZero.getX() - move.getDx(), posOfZero.getY() - move.getDy());
+                newBound = Math.min(newBound, search(current, move, cost + 1, newEstimate));
+
                 if (isFinished) {
                     moves.add(move);
                     return 0;
                 }
-                
-                current.setCost(current.getCost() - 1);
-                current.move(-1 * move.getDx(), -1 * move.getDy());
-                manhattan.update(posOfZero.getX(), posOfZero.getY(), posOfZero.getX() + move.getDx(), posOfZero.getY() + move.getDy());
+
+                current.move(move.getOpposite());
             }
         }
-
-        return min;
+        
+        return newBound;
     }
 }

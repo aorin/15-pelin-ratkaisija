@@ -8,6 +8,7 @@ package solver.logic.domain;
  * alkuasetelmasta.
  */
 public class Puzzle {
+
     private int[][] values;
     private int cost;
     private Point posOfZero;
@@ -28,7 +29,7 @@ public class Puzzle {
 
     /**
      * Metodi palauttaa sen numeroarvon, mikä pelilaudalla on haetussa kohdassa.
-     * 
+     *
      * @param x Haetun kohdan x-koordinaatti
      * @param y Haetun kohdan y-koordinaatti
      * @return Numeroarvo sarakkeessa x rivillä y
@@ -39,6 +40,7 @@ public class Puzzle {
 
     /**
      * Metodi palauttaa tiedon kaikkien numeroiden sijainnista.
+     *
      * @return Tieto numeroiden sijainnista
      */
     public int[][] values() {
@@ -47,35 +49,59 @@ public class Puzzle {
 
     /**
      * Metodi palauttaa tiedon pelilaudan leveydestä.
+     *
      * @return Pelilaudan leveys
      */
     public int n() {
         return this.values.length;
     }
+    
+    public boolean canMove(Move move) {
+        if (move == Move.UP) {
+            return up();
+        } else if (move == Move.DOWN) {
+            return down();
+        } else if (move == Move.LEFT) {
+            return left();
+        } else {
+            return right();
+        }
+    }
+
+    public boolean up() {
+        return posOfZero.getY() - 1 >= 0;
+    }
+
+    public boolean down() {
+        return posOfZero.getY() + 1 < values.length;
+    }
+
+    public boolean left() {
+        return posOfZero.getX() - 1 >= 0;
+    }
+
+    public boolean right() {
+        return posOfZero.getX() + 1 < values.length;
+    }
 
     /**
      * Metodi liikuttaa yhden palan nollan paikalle, jos mahdollista.
-     * 
-     * @param dx Liikutettavan palan x-koordinaatin sijainti nollaan verrattuna
-     * @param dy Liikutettavan palan y-koordinaatin sijainti nollaan verrattuna
-     * @return Palauttaa true, jos siirto onnistui, muuten false
+     *
+     * @param move
      */
-    public boolean move(int dx, int dy) {
+    public void move(Move move) {
+        int dx = move.getDx(), dy = move.getDy();
         int x0 = posOfZero.getX(), y0 = posOfZero.getY();
 
-        try {
-            values[x0][y0] = values[x0 + dx][y0 + dy];
-            values[x0 + dx][y0 + dy] = 0;
-            posOfZero.setX(posOfZero.getX() + dx);
-            posOfZero.setY(posOfZero.getY() + dy);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        values[x0][y0] = values[x0 + dx][y0 + dy];
+        values[x0 + dx][y0 + dy] = 0;
+        posOfZero.setX(posOfZero.getX() + dx);
+        posOfZero.setY(posOfZero.getY() + dy);
     }
 
     /**
      * Metodi kertoo peliasetelmaan pääsemiseen vaatimien siirtojen määrän.
+     *
      * @return Peliasetelmaan pääsemiseen vaatineet siirrot
      */
     public int getCost() {
@@ -84,6 +110,7 @@ public class Puzzle {
 
     /**
      * Metodi asettaa oliolle kuluneiden siirtojen määrän.
+     *
      * @param cost Kuluneiden siirtojen määrä
      */
     public void setCost(int cost) {
@@ -92,6 +119,7 @@ public class Puzzle {
 
     /**
      * Metodi palauttaa tiedon siitä, missä numero nolla sijaitsee pelilaudalla
+     *
      * @return Tieto nollan sijannista
      */
     public Point positionOfZero() {

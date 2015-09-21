@@ -11,7 +11,9 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static void main(String[] args) {
         GameboardGenerator generator = new GameboardGenerator();
-        Puzzle puzzle = new Puzzle(generator.generate4x4());
+        
+        Puzzle puzzle = new Puzzle(new int[][]{{1, 5, 9, 14}, {2, 6, 10, 15}, {3, 7, 11, 13}, {4, 8, 12, 0}});
+        //Puzzle puzzle = new Puzzle(generator.generate4x4());
         Window window = new Window(puzzle, generator);
         SwingUtilities.invokeLater(window);
     }

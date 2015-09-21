@@ -58,4 +58,12 @@ public class List<T> {
     public int length() {
         return n;
     }
+    
+    public void reverse() {
+        for (int i = 0; i < n / 2; i++) {
+            Object value = array[i];
+            array[i] = array[n - i - 1];
+            array[n - i - 1] = value;
+        }
+    }
 }

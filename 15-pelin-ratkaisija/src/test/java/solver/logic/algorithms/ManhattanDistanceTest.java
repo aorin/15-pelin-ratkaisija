@@ -1,5 +1,6 @@
 package solver.logic.algorithms;
 
+import solver.logic.algorithms.heuristic.ManhattanDistance;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

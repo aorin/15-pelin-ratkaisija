@@ -1,14 +1,13 @@
-package solver.logic.algorithms;
+package solver.logic.algorithms.heuristic;
 
 import solver.logic.domain.Puzzle;
-import solver.logic.dataStructures.AVLTree;
 import solver.logic.domain.Point;
 
 /**
  * Luokka sisältää toiminnallisuuden tilan Manhattan-etäisyyden laskemiseen.
  */
-public class ManhattanDistance {
-    private AVLTree<Integer, Point> goalPositions;
+public class ManhattanDistance implements Heuristic {
+    private Point[] goalPositions;
     private int[][] values;
     private int previousEstimate;
 
@@ -19,11 +18,11 @@ public class ManhattanDistance {
      */
     public ManhattanDistance(Puzzle puzzle) {
         int n = puzzle.n();
-        goalPositions = new AVLTree<>();
+        goalPositions = new Point[n * n];
 
         int j = 0, k = 0;
         for (int i = 1; i < n * n; i++) {
-            goalPositions.put(i, new Point(j, k));
+            goalPositions[i] = new Point(j, k);
             j++;
             if (j >= n) {
                 j = 0;
@@ -47,15 +46,18 @@ public class ManhattanDistance {
      * Päivittää asetelman Manhattan-etäisyyden vastaamaan uutta tilannetta
      * jonkun palan siirron jälkeen.
      * 
+     * @param estimate Edellisen asetelman Manhattan-etäisyys
      * @param x1 Liikutetun palan vanha x-koordinaatti
      * @param y1 Liikutetun palan vanha y-koordinaatti
      * @param x2 Liikutetun palan uusi x-koordinaatti
      * @param y2 Liikutetun palan uusi y-koordinaatti
      */
-    public void update(int x1, int y1, int x2, int y2) {
-        Point goalPos = goalPositions.get(values[x2][y2]);
-        previousEstimate -= abs(x1 - goalPos.getX()) + abs(y1 - goalPos.getY());
-        previousEstimate += abs(x2 - goalPos.getX()) + abs(y2 - goalPos.getY());
+    @Override
+    public int update(int estimate, int x1, int y1, int x2, int y2) {
+        Point goalPos = goalPositions[values[x2][y2]];
+        estimate -= abs(x1 - goalPos.getX()) + abs(y1 - goalPos.getY());
+        estimate += abs(x2 - goalPos.getX()) + abs(y2 - goalPos.getY());
+        return estimate;
     }
 
     private int getDistance() {
@@ -64,7 +66,7 @@ public class ManhattanDistance {
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[i].length; j++) {
                 if (values[i][j] != 0) {
-                    Point goalPos = goalPositions.get(values[i][j]);
+                    Point goalPos = goalPositions[values[i][j]];
                     sum += abs(i - goalPos.getX()) + abs(j - goalPos.getY());
                 }
             }
