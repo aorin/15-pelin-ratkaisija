@@ -41,11 +41,11 @@ public class PuzzleTest {
         assertEquals(4, puzzle.n());
     }
 
-    @Test
-    public void movesTiles() {
-        puzzle = new Puzzle(new int[][]{{0, 1}, {2, 3}});
-        assertTrue(puzzle.canMove(Move.RIGHT));
-        assertEquals(2, puzzle.valueAtPoint(0, 0));
-        assertEquals(0, puzzle.valueAtPoint(1, 0));
-    }
+//    @Test
+//    public void movesTiles() {
+//        puzzle = new Puzzle(new int[][]{{0, 1}, {2, 3}});
+//        assertTrue(puzzle.canMove(Move.RIGHT));
+//        assertEquals(2, puzzle.valueAtPoint(0, 0));
+//        assertEquals(0, puzzle.valueAtPoint(1, 0));
+//    }
 }

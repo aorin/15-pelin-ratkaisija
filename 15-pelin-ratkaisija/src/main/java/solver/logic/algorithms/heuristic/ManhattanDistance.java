@@ -7,13 +7,15 @@ import solver.logic.domain.Point;
  * Luokka sisältää toiminnallisuuden tilan Manhattan-etäisyyden laskemiseen.
  */
 public class ManhattanDistance implements Heuristic {
+
     private Point[] goalPositions;
     private int[][] values;
-    private int previousEstimate;
+    private boolean isFinished;
 
     /**
      * Konstruktori luo uuden Manhattan-etäisyys-laskijan annetun peliasetelman
      * perusteella.
+     *
      * @param puzzle Käytössä oleva peliasetelma
      */
     public ManhattanDistance(Puzzle puzzle) {
@@ -31,36 +33,16 @@ public class ManhattanDistance implements Heuristic {
         }
 
         values = puzzle.values();
-        previousEstimate = getDistance();
+        isFinished = false;
     }
 
     /**
      * Palauttaa asetelman Manhattan-etäisyyden.
+     *
      * @return Peliasetelman Manhattan-etäisyys
      */
-    public int getEstimate() {
-        return this.previousEstimate;
-    }
-
-    /**
-     * Päivittää asetelman Manhattan-etäisyyden vastaamaan uutta tilannetta
-     * jonkun palan siirron jälkeen.
-     * 
-     * @param estimate Edellisen asetelman Manhattan-etäisyys
-     * @param x1 Liikutetun palan vanha x-koordinaatti
-     * @param y1 Liikutetun palan vanha y-koordinaatti
-     * @param x2 Liikutetun palan uusi x-koordinaatti
-     * @param y2 Liikutetun palan uusi y-koordinaatti
-     */
     @Override
-    public int update(int estimate, int x1, int y1, int x2, int y2) {
-        Point goalPos = goalPositions[values[x2][y2]];
-        estimate -= abs(x1 - goalPos.getX()) + abs(y1 - goalPos.getY());
-        estimate += abs(x2 - goalPos.getX()) + abs(y2 - goalPos.getY());
-        return estimate;
-    }
-
-    private int getDistance() {
+    public int getEstimate() {
         int sum = 0;
 
         for (int i = 0; i < values.length; i++) {
@@ -72,7 +54,33 @@ public class ManhattanDistance implements Heuristic {
             }
         }
 
+        if (sum == 0) {
+            isFinished = true;
+        }
+
         return sum;
+    }
+
+    /**
+     * Päivittää asetelman Manhattan-etäisyyden vastaamaan uutta tilannetta
+     * jonkun palan siirron jälkeen.
+     *
+     * @param estimate Edellisen asetelman Manhattan-etäisyys
+     * @param x1 Liikutetun palan vanha x-koordinaatti
+     * @param y1 Liikutetun palan vanha y-koordinaatti
+     * @param x2 Liikutetun palan uusi x-koordinaatti
+     * @param y2 Liikutetun palan uusi y-koordinaatti
+     * @return Uusi arvio etäisyydestä
+     */
+    @Override
+    public int update(int estimate, int x1, int y1, int x2, int y2) {
+        Point goalPos = goalPositions[values[x2][y2]];
+        estimate -= abs(x1 - goalPos.getX()) + abs(y1 - goalPos.getY());
+        estimate += abs(x2 - goalPos.getX()) + abs(y2 - goalPos.getY());
+        if (estimate == 0) {
+            isFinished = true;
+        }
+        return estimate;
     }
 
     private int abs(int number) {
@@ -80,5 +88,15 @@ public class ManhattanDistance implements Heuristic {
             return -1 * number;
         }
         return number;
+    }
+
+    /**
+     * Metodi kertoo, onko peli saavuttanut tavoitetilan.
+     *
+     * @return True, jos tavoitetila on saavutettu, muutoin false
+     */
+    @Override
+    public boolean puzzleIsInGoalState() {
+        return isFinished;
     }
 }

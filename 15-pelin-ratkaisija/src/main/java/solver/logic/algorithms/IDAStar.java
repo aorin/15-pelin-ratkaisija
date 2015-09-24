@@ -19,6 +19,7 @@ public class IDAStar {
     private boolean isFinished;
     private Puzzle puzzle;
     private List<Move> moves;
+    private int testingBound;
 
     /**
      * Konstruktori luo uuden IDA*-laskijan.
@@ -29,6 +30,12 @@ public class IDAStar {
         this.heuristic = new ManhattanDistance(puzzle);
         this.moves = new List<>();
         this.puzzle = puzzle;
+        this.testingBound = 80;
+    }
+    
+    public IDAStar(Puzzle puzzle, int testingBound) {
+        this(puzzle);
+        this.testingBound = testingBound;
     }
 
     /**
@@ -42,8 +49,8 @@ public class IDAStar {
         int estimate = heuristic.getEstimate();
         bound = estimate;
 
-        while (!isFinished) {
-            System.out.println("Etsitään syvyydeltä: " + bound);
+        while (!(isFinished || bound > testingBound)) {
+            //System.out.println("Etsitään syvyydeltä: " + bound);
             bound = search(puzzle, null, 0, estimate);
         }
 
@@ -58,7 +65,7 @@ public class IDAStar {
             return totalCost;
         }
 
-        if (estimate == 0) {
+        if (heuristic.puzzleIsInGoalState()) {
             isFinished = true;
             return 0;
         }

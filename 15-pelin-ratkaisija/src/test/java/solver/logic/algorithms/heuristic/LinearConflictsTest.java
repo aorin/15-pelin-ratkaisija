@@ -1,8 +1,9 @@
-package solver.logic.algorithms;
+package solver.logic.algorithms.heuristic;
 
-import solver.logic.algorithms.heuristic.LinearConflicts;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import solver.logic.domain.Move;
+import solver.logic.domain.Point;
 import solver.logic.domain.Puzzle;
 
 public class LinearConflictsTest {
@@ -11,7 +12,7 @@ public class LinearConflictsTest {
     private Puzzle puzzle;
 
     @Test
-    public void calculatesCorrectValue() {
+    public void calculatesCorrectValue1() {
         puzzle = new Puzzle(new int[][]{{1, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 1}, {4, 8, 12, 0}});
         calculator = new LinearConflicts(puzzle);
         assertEquals(0, calculator.getConflicts());
@@ -43,5 +44,14 @@ public class LinearConflictsTest {
         puzzle = new Puzzle(new int[][]{{7, 6, 1}, {8, 2, 5}, {3, 4, 0}});
         calculator = new LinearConflicts(puzzle);
         assertEquals(4, calculator.getConflicts());
+    }
+
+    @Test
+    public void updatesCorrectly() {
+        puzzle = new Puzzle(new int[][]{{7, 6, 1}, {8, 2, 5}, {3, 4, 0}});
+        calculator = new LinearConflicts(puzzle);
+        puzzle.move(Move.LEFT);
+        Point zero = puzzle.positionOfZero();
+        assertEquals(-1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX() + 1, zero.getY()));
     }
 }
