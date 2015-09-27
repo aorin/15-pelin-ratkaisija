@@ -46,6 +46,23 @@ public class Puzzle {
     public int[][] values() {
         return this.values;
     }
+    
+    /**
+     * Metodi palauttaa kopion numeroiden sijaintitaulukosta.
+     * 
+     * @return Kopio sijaintitaulukosta 
+     */
+    public int[][] copyOfValues() {
+        int[][] copy = new int[values.length][values.length];
+        
+        for (int i = 0; i < copy.length; i++) {
+            for (int j = 0; j < copy.length; j++) {
+                copy[i][j] = values[i][j];
+            }
+        }
+        
+        return copy;
+    }
 
     /**
      * Metodi palauttaa tiedon pelilaudan leveydestä.

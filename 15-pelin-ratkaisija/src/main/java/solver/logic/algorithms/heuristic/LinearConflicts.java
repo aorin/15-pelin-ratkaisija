@@ -42,29 +42,27 @@ public class LinearConflicts {
      */
     public int changeBetweenStates(int x1, int y1, int x2, int y2) {
         int change = 0;
-        values[x1][y1] = values[x2][y2];
+        int value = values[x2][y2];
+        values[x1][y1] = value;
+        
         if (x1 != x2) {
             change += columnConflicts(x1);
             change -= columnConflicts(x2);
             values[x1][y1] = 0;
+            values[x2][y2] = 0;
             change -= columnConflicts(x1);
             change += columnConflicts(x2);
         } else if (y1 != y2) {
             change += rowConflicts(y1);
             change -= rowConflicts(y2);
             values[x1][y1] = 0;
+            values[x2][y2] = 0;
             change -= rowConflicts(y1);
             change += rowConflicts(y2);
         }
-        System.out.println("muutos: " + change);
-        int nyt = countAllConfilicts();
-        values[x1][y1] = values[x2][y2];
-        values[x2][y2] = 0;
-        int ennen = countAllConfilicts();
-        values[x2][y2] = values[x1][y1];
-        values[x1][y1] = 0;
-        System.out.println("oikea: " + (nyt - ennen));
-        return nyt - ennen;
+        values[x2][y2] = value;
+        
+        return -change;
     }
 
     private int countAllConfilicts() {

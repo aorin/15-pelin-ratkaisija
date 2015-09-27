@@ -27,7 +27,7 @@ public class IDAStar {
      * @param puzzle Käytössä oleva pelitila
      */
     public IDAStar(Puzzle puzzle) {
-        this.heuristic = new ManhattanDistance(puzzle);
+        this.heuristic = new ManhattanDistanceWithConflicts(puzzle);
         this.moves = new List<>();
         this.puzzle = puzzle;
         this.testingBound = 80;
@@ -50,7 +50,7 @@ public class IDAStar {
         bound = estimate;
 
         while (!(isFinished || bound > testingBound)) {
-            //System.out.println("Etsitään syvyydeltä: " + bound);
+            System.out.println("Etsitään syvyydeltä: " + bound);
             bound = search(puzzle, null, 0, estimate);
         }
 

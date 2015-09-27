@@ -47,11 +47,29 @@ public class LinearConflictsTest {
     }
 
     @Test
-    public void updatesCorrectly() {
+    public void updatesCorrectly1() {
         puzzle = new Puzzle(new int[][]{{7, 6, 1}, {8, 2, 5}, {3, 4, 0}});
         calculator = new LinearConflicts(puzzle);
         puzzle.move(Move.LEFT);
         Point zero = puzzle.positionOfZero();
         assertEquals(-1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX() + 1, zero.getY()));
+    }
+
+    @Test
+    public void updatesCorrectly2() {
+        puzzle = new Puzzle(new int[][]{{9, 0, 3, 2}, {11, 14, 10, 13}, {1, 4, 15, 8}, {7, 5, 12, 6}});
+        calculator = new LinearConflicts(puzzle);
+        puzzle.move(Move.RIGHT);
+        Point zero = puzzle.positionOfZero();
+        assertEquals(-1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX() - 1, zero.getY()));
+    }
+
+    @Test
+    public void updatesCorrectly3() {
+        puzzle = new Puzzle(new int[][]{{2, 8, 0, 11}, {4, 9, 6, 15}, {13, 1, 12, 5}, {7, 3, 10, 14}});
+        calculator = new LinearConflicts(puzzle);
+        puzzle.move(Move.DOWN);
+        Point zero = puzzle.positionOfZero();
+        assertEquals(1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX(), zero.getY() - 1));
     }
 }
