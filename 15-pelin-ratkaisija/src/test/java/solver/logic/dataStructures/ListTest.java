@@ -1,11 +1,15 @@
 package solver.logic.dataStructures;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.Before;
 
 public class ListTest {
     
-    public ListTest() {
+    private List list;
+    
+    @Before
+    public void setUp() {
+        this.list = new List();
     }
+    
     
 }

@@ -10,3 +10,6 @@ Pelin ratkaisu perustuu IDAStar-algoritmiin. Algoritmissa käytettään Heuristi
 Ohjelmassa käytetään jäljellä olevien siirtojen määrän laskemiseen Manhattan-etäisyys funktiota. Funktio laskee jokaisen palan paitsi etäisyyden tavoitepaikkaansa. Ohjelmassa on myös luokka ManhattanDistanceWithConflicts, missä Manhattan-etäisyyden lisäksi arvioon lisätään mahdolliset lineaariset konfliktit.
 
 ##Aika- ja tilavaativuudet
+
+##Puutteet ja parannusehdotukset
+Vaikka algoritmi ratkaisee useimmat 15-pelit kohtuullisessa ajassa, ratkaisuun kuluvien siirtojen määrän kasvaessa liian suureksi, ohjelmalla menee liian kauan ratkausun saavuttamiseen. Enimmillään 15-pelin ratkaisuun voi tarvita jopa 80 siirtoa. Algoritmia voisi nopeuttaa ottamalla käyttöön "disjoint pattern database" -heuristiikka. Sen ideana on jakaa laatat osajoukkoihin ja luoda tietokanta, joka sisältää jäljellä olevien siirtojen arvion jokaisesta erilaista tilanteesta. 

@@ -50,7 +50,7 @@ public class IDAStar {
         bound = estimate;
 
         while (!(isFinished || bound > testingBound)) {
-            System.out.println("Etsitään syvyydeltä: " + bound);
+//            System.out.println("Etsitään syvyydeltä: " + bound);
             bound = search(puzzle, null, 0, estimate);
         }
 

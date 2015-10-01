@@ -3,7 +3,7 @@ package solver.logic.domain;
 /**
  * Luokka, joka määrittelee n-pelin pelialustan.
  * <p>
- * Pelialustaan liittyviä ominaisuuksia ovat numeroiden sijainnit alustalla ja
+ * Pelialustaan liittyviä ominaisuuksia on numeroiden sijainnit alustalla ja
  * se, kuinka monta siirtoa kyseiseen asetelmaan pääseminen vaati
  * alkuasetelmasta.
  */
@@ -48,11 +48,11 @@ public class Puzzle {
     }
     
     /**
-     * Metodi palauttaa kopion numeroiden sijaintitaulukosta.
+     * Metodi palauttaa kopion pelistä.
      * 
-     * @return Kopio sijaintitaulukosta 
+     * @return Kopio 
      */
-    public int[][] copyOfValues() {
+    public Puzzle copy() {
         int[][] copy = new int[values.length][values.length];
         
         for (int i = 0; i < copy.length; i++) {
@@ -61,7 +61,7 @@ public class Puzzle {
             }
         }
         
-        return copy;
+        return new Puzzle(copy);
     }
 
     /**
@@ -73,38 +73,28 @@ public class Puzzle {
         return this.values.length;
     }
     
+    /**
+     * Metodi kertoo voiko annettu siirto tehdä.
+     * 
+     * @param move Tutkittava siirto
+     * @return Palauttaa true, jos siirto onnistuu, muuten false
+     */
     public boolean canMove(Move move) {
         if (move == Move.UP) {
-            return up();
+            return posOfZero.getY() - 1 >= 0;
         } else if (move == Move.DOWN) {
-            return down();
+            return posOfZero.getY() + 1 < values.length;
         } else if (move == Move.LEFT) {
-            return left();
+            return posOfZero.getX() - 1 >= 0;
         } else {
-            return right();
+            return posOfZero.getX() + 1 < values.length;
         }
     }
 
-    public boolean up() {
-        return posOfZero.getY() - 1 >= 0;
-    }
-
-    public boolean down() {
-        return posOfZero.getY() + 1 < values.length;
-    }
-
-    public boolean left() {
-        return posOfZero.getX() - 1 >= 0;
-    }
-
-    public boolean right() {
-        return posOfZero.getX() + 1 < values.length;
-    }
-
     /**
-     * Metodi liikuttaa yhden palan nollan paikalle, jos mahdollista.
+     * Metodi liikuttaa yhden palan nollan paikalle siirron mukaisesti.
      *
-     * @param move
+     * @param move Siirto
      */
     public void move(Move move) {
         int dx = move.getDx(), dy = move.getDy();

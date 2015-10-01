@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import solver.logic.dataStructures.List;
 
 public class GameboardGeneratorTest {
+
     private GameboardGenerator g;
 
     public GameboardGeneratorTest() {
@@ -15,6 +16,12 @@ public class GameboardGeneratorTest {
     public void returns4x4Array() {
         int[][] array = g.generate4x4();
         assertTrue(array.length == 4 && array[0].length == 4);
+    }
+
+    @Test
+    public void returns3x3Array() {
+        int[][] array = g.generate3x3();
+        assertTrue(array.length == 3 && array[0].length == 3);
     }
 
     @Test

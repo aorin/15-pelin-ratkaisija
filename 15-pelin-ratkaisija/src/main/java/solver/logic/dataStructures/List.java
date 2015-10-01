@@ -41,10 +41,20 @@ public class List<T> {
         n = 0;
     }
 
+    /**
+     * Metodi hakee arvon indeksin perusteella.
+     * @param i Indeksi
+     * @return Indeksin kohdalla oleva arvo
+     */
     public T get(int i) {
         return (T) array[i];
     }
 
+    /**
+     * Metodi kertoo sisältääkö lista haettavan arvon.
+     * @param value Haettava olio
+     * @return Palauttaa true, jos listalla on haettava olio, muuten false
+     */
     public boolean contains(T value) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == value) {
@@ -55,10 +65,17 @@ public class List<T> {
         return false;
     }
 
+    /**
+     * Metodi kertoo listan pituuden
+     * @return Listan pituus
+     */
     public int length() {
         return n;
     }
     
+    /**
+     * Metodi kääntää listan.
+     */
     public void reverse() {
         for (int i = 0; i < n / 2; i++) {
             Object value = array[i];

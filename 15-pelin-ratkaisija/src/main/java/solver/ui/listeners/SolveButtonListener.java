@@ -15,16 +15,17 @@ public class SolveButtonListener implements ActionListener {
     private SolvabilityDeterminer solvabilityDeterminer;
     private IDAStar idastar;
     private Renderer renderer;
+    private Mover mover;
 
     public SolveButtonListener(Puzzle puzzle, Renderer renderer) {
         this.puzzle = puzzle;
         this.renderer = renderer;
         this.solvabilityDeterminer = new SolvabilityDeterminer();
+        this.mover = new Mover(renderer);
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        this.idastar = new IDAStar(puzzle);
         System.out.println("Tarkistetaan, onko peli ratkaistavissa!");
         boolean solvable = solvabilityDeterminer.puzzeIsSolvable(puzzle);
 
@@ -33,18 +34,20 @@ public class SolveButtonListener implements ActionListener {
             return;
         }
 
+        Puzzle copy = puzzle.copy();
+        this.idastar = new IDAStar(copy);
+
         System.out.println("Peli voidaan ratkaista.");
         List<Move> moves = idastar.solve();
         if (moves == null) {
             System.out.print("Ratkaisua ei löytynyt! D:");
         } else {
+            mover.move(puzzle, moves);
             System.out.println("Ratkaisu löytyi! :D");
             System.out.println("Siirrot:");
-            for (int i = moves.length() - 1; i >= 0; i--) {
-                //puzzle.move(moves.get(i).getDx(), moves.get(i).getDy());
+            for (int i = 0; i < moves.length(); i++) {
                 System.out.println(moves.get(i).name());
             }
-            renderer.repaint();
         }
     }
 }

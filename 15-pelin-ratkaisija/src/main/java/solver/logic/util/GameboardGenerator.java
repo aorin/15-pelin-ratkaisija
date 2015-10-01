@@ -4,11 +4,14 @@ import solver.logic.dataStructures.List;
 import java.util.Random;
 
 /**
- * Luokka generoi uuden satunnaisen 15-pelin peliasetelman.
+ * Luokan avulla voi generoida satunnaisia 8-pelin tai 15-pelin peliasetelmia.
  */
 public class GameboardGenerator {
     private Random random;
 
+    /**
+     * Konstruktori luo uuden peliasetelmien generoijan.
+     */
     public GameboardGenerator() {
         random = new Random();
     }
@@ -37,8 +40,8 @@ public class GameboardGenerator {
 
         for (int i = 0; i < gameboard.length; i++) {
             for (int j = 0; j < gameboard[i].length; j++) {
-                int value = random.nextInt(n * n);
-                while (used.contains(value)) {
+                Integer value = null;
+                while (value == null || used.contains(value)) {
                     value = random.nextInt(n * n);
                 }
                 gameboard[i][j] = value;
