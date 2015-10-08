@@ -11,6 +11,19 @@ public class EfficiencyTester {
         this.idastarTest = new IDAStarEfficiencyTest();
         this.listTest = new ListEfficiencyTest();
     }
+    
+    @Test
+    public void testIDAStar15() {
+        System.out.println("");
+        System.out.println("IDAStarin suorituskykytestaus");
+        System.out.println("");
+        
+        for (int i = 40; i <= 60; i += 5) {
+            System.out.println(i + " kokoiseen 15-pelin ratkaisemiseen kului aikaa " + idastarTest.test15Puzzle(10, i) + " ns.");
+        }
+        
+        System.out.println("");
+    }
 
     @Test
     public void testIDASTarRandom15() {

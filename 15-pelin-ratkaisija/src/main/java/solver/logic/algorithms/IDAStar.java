@@ -19,46 +19,58 @@ public class IDAStar {
     private boolean isFinished;
     private Puzzle puzzle;
     private List<Move> moves;
+    private long time;
     private int testingBound;
 
     /**
      * Konstruktori luo uuden IDA*-laskijan.
-     *
-     * @param puzzle Käytössä oleva pelitila
      */
-    public IDAStar(Puzzle puzzle) {
-        this.heuristic = new ManhattanDistanceWithConflicts(puzzle);
+    public IDAStar() {
         this.moves = new List<>();
-        this.puzzle = puzzle;
         this.testingBound = 80;
     }
     
-    public IDAStar(Puzzle puzzle, int testingBound) {
-        this(puzzle);
+    public IDAStar(int testingBound) {
         this.testingBound = testingBound;
     }
 
     /**
      * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
      *
+     * @param puzzle Peli, joka halutaan ratkaista
      * @return siirrot, joita käytettiin ratkaisun saavuttamiseen
      */
-    public List<Move> solve() {
+    public List<Move> solve(Puzzle puzzle) {
         moves.clear();
         isFinished = false;
+        this.puzzle = puzzle;
+        this.heuristic = new ManhattanDistanceWithConflicts(puzzle);
         int estimate = heuristic.getEstimate();
         bound = estimate;
-
+        
+        long start = System.nanoTime();
+        
         while (!(isFinished || bound > testingBound)) {
 //            System.out.println("Etsitään syvyydeltä: " + bound);
-            bound = search(puzzle, null, 0, estimate);
+            bound = search(null, 0, estimate);
         }
-
+        
+        long end = System.nanoTime();
+        time = end - start;
+        
         moves.reverse();
         return moves;
     }
+    
+    /**
+     * Metodi palauttaa edelliseen ratkaisuun kuluneen ajan.
+     * @return Ratkaisemiseen kulunut aika nanosekunteina
+     */
+    public long previousTime() {
+        return time;
+    }
 
-    private int search(Puzzle current, Move lastMove, int cost, int estimate) {
+    private int search(Move lastMove, int cost, int estimate) {
         int totalCost = estimate + cost;
 
         if (totalCost > bound) {
@@ -67,24 +79,24 @@ public class IDAStar {
 
         if (heuristic.puzzleIsInGoalState()) {
             isFinished = true;
-            return 0;
+            return bound;
         }
 
         int newBound = Integer.MAX_VALUE;
         for (Move move : Move.values()) {
-            if (current.canMove(move) && lastMove != move.getOpposite()) {
-                current.move(move);
-                Point posOfZero = current.positionOfZero();
+            if (puzzle.canMove(move) && lastMove != move.getOpposite()) {
+                puzzle.move(move);
+                Point posOfZero = puzzle.positionOfZero();
                 
                 int newEstimate = heuristic.update(estimate, posOfZero.getX(), posOfZero.getY(), posOfZero.getX() - move.getDx(), posOfZero.getY() - move.getDy());
-                newBound = Math.min(newBound, search(current, move, cost + 1, newEstimate));
+                newBound = Math.min(newBound, search(move, cost + 1, newEstimate));
 
                 if (isFinished) {
                     moves.add(move);
-                    return 0;
+                    return bound;
                 }
 
-                current.move(move.getOpposite());
+                puzzle.move(move.getOpposite());
             }
         }
         

@@ -35,19 +35,19 @@ public class SolveButtonListener implements ActionListener {
         }
 
         Puzzle copy = puzzle.copy();
-        this.idastar = new IDAStar(copy);
+        this.idastar = new IDAStar();
 
         System.out.println("Peli voidaan ratkaista.");
-        List<Move> moves = idastar.solve();
+        List<Move> moves = idastar.solve(copy);
         if (moves == null) {
             System.out.print("Ratkaisua ei löytynyt! D:");
         } else {
-            mover.move(puzzle, moves);
-            System.out.println("Ratkaisu löytyi! :D");
+            //mover.move(puzzle, moves);
+            System.out.println("Ratkaisu löytyi syvyydeltä " + moves.length());
             System.out.println("Siirrot:");
-            for (int i = 0; i < moves.length(); i++) {
-                System.out.println(moves.get(i).name());
-            }
+//            for (int i = 0; i < moves.length(); i++) {
+//                System.out.println(moves.get(i).name());
+//            }
         }
     }
 }
