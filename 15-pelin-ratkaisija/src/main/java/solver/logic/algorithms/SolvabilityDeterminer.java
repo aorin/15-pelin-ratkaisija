@@ -14,7 +14,7 @@ public class SolvabilityDeterminer {
  * @param puzzle peli, jonka ratkaistavuus halutaan selvittää
  * @return true, jos peli on ratkaistavissa, muulloin false
  */
-    public boolean puzzeIsSolvable(Puzzle puzzle) {
+    public boolean puzzleIsSolvable(Puzzle puzzle) {
         int[] array = copyValuesToOneDimensionalArray(puzzle.values());
         int inversions = 0;
 
@@ -24,7 +24,7 @@ public class SolvabilityDeterminer {
             }
         }
 
-        return (puzzle.values().length % 2 == 1 && inversions % 2 == 0) || (puzzle.values().length % 2 == 0 && ((inversions % 2 == 0) == (zerosRow % 2 == 1)));
+        return (puzzle.n() % 2 == 1 && inversions % 2 == 0) || (puzzle.n() % 2 == 0 && ((inversions % 2 == 0) == (zerosRow % 2 == 1)));
     }
 
     private int[] copyValuesToOneDimensionalArray(int[][] values) {

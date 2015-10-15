@@ -7,47 +7,54 @@ import solver.logic.algorithms.SolvabilityDeterminer;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
 import solver.logic.domain.Puzzle;
-import solver.ui.Renderer;
+import solver.ui.Window;
 
 public class SolveButtonListener implements ActionListener {
 
     private Puzzle puzzle;
     private SolvabilityDeterminer solvabilityDeterminer;
     private IDAStar idastar;
-    private Renderer renderer;
+    private Window window;
     private Mover mover;
+    private Thread thread;
 
-    public SolveButtonListener(Puzzle puzzle, Renderer renderer) {
+    public SolveButtonListener(Window window, Puzzle puzzle) {
         this.puzzle = puzzle;
-        this.renderer = renderer;
+        this.window = window;
         this.solvabilityDeterminer = new SolvabilityDeterminer();
-        this.mover = new Mover(renderer);
+        this.mover = new Mover(window);
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        System.out.println("Tarkistetaan, onko peli ratkaistavissa!");
-        boolean solvable = solvabilityDeterminer.puzzeIsSolvable(puzzle);
+        window.disableButtons();
 
-        if (!solvable) {
-            System.out.println("Peliä ei ole mahdollista ratkaista.");
-            return;
-        }
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean solvable = solvabilityDeterminer.puzzleIsSolvable(puzzle);
 
-        Puzzle copy = puzzle.copy();
-        this.idastar = new IDAStar();
+                if (!solvable) {
+                    window.alert("Peliä ei ole mahdollista ratkaista.");
+                    window.enableButtons();
+                    return;
+                }
 
-        System.out.println("Peli voidaan ratkaista.");
-        List<Move> moves = idastar.solve(copy);
-        if (moves == null) {
-            System.out.print("Ratkaisua ei löytynyt! D:");
-        } else {
-            //mover.move(puzzle, moves);
-            System.out.println("Ratkaisu löytyi syvyydeltä " + moves.length());
-            System.out.println("Siirrot:");
-//            for (int i = 0; i < moves.length(); i++) {
-//                System.out.println(moves.get(i).name());
-//            }
-        }
+                Puzzle copy = puzzle.copy();
+                idastar = new IDAStar(copy);
+
+                window.alert("Ratkaistaan peliä...");
+                List<Move> moves = idastar.solve();
+                if (moves == null) {
+                    window.alert("Ratkaisua ei löytynyt! D:");
+                } else {
+                    window.addKeyListener(moves);
+                    window.alert("Ratkaisu löytyi! Siirtojen määrä: " + moves.length());
+                    window.enableButtons();
+                }
+            }
+        });
+
+        thread.start();
     }
 }

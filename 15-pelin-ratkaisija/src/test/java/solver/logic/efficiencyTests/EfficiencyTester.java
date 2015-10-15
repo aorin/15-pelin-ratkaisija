@@ -19,7 +19,7 @@ public class EfficiencyTester {
         System.out.println("");
         
         for (int i = 40; i <= 60; i += 5) {
-            System.out.println(i + " kokoiseen 15-pelin ratkaisemiseen kului aikaa " + idastarTest.test15Puzzle(10, i) + " ns.");
+//            System.out.println(i + " kokoiseen 15-pelin ratkaisemiseen kului aikaa " + idastarTest.test15Puzzle(10, i) + " ns.");
         }
         
         System.out.println("");

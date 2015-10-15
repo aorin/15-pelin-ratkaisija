@@ -1,7 +1,6 @@
 package solver.logic.algorithms;
 
 import solver.logic.algorithms.heuristic.Heuristic;
-import solver.logic.algorithms.heuristic.ManhattanDistance;
 import solver.logic.algorithms.heuristic.ManhattanDistanceWithConflicts;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
@@ -9,8 +8,8 @@ import solver.logic.domain.Point;
 import solver.logic.domain.Puzzle;
 
 /**
- * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen n-pelin lähtötilasta
- * tavoitetilaan IDA*-algoritmin avulla.
+ * Luokka sisältää toiminnallisuuden lyhimmän reitin etsimiseen n-pelin
+ * lähtötilasta tavoitetilaan IDA*-algoritmin avulla.
  */
 public class IDAStar {
 
@@ -23,50 +22,63 @@ public class IDAStar {
     private int testingBound;
 
     /**
-     * Konstruktori luo uuden IDA*-laskijan.
+     * Konstruktori luo uuden IDA*-laskijan annetun pelin perusteella.
+     *
+     * @param puzzle Peli, joka halutaan ratkaista
+     * @param heuristic Heuristiikka, jota käytetään ratkaisussa
      */
-    public IDAStar() {
+    public IDAStar(Puzzle puzzle, Heuristic heuristic) {
         this.moves = new List<>();
+        this.puzzle = puzzle;
+        this.heuristic = heuristic;
+        this.isFinished = false;
         this.testingBound = 80;
     }
-    
-    public IDAStar(int testingBound) {
-        this.testingBound = testingBound;
+
+    /**
+     * Konstruktori luo uuden IDA*-laskijan annetun pelin perusteella.
+     * <p>
+     * Heuristiikkana algoritmi käyttää ManhattanDistanceWithConflicts-heuristiikkaa.
+     * @param puzzle Peli, joka halutaan ratkaista
+     */
+    public IDAStar(Puzzle puzzle) {
+        this(puzzle, new ManhattanDistanceWithConflicts(puzzle));
     }
 
     /**
      * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
      *
-     * @param puzzle Peli, joka halutaan ratkaista
      * @return siirrot, joita käytettiin ratkaisun saavuttamiseen
      */
-    public List<Move> solve(Puzzle puzzle) {
-        moves.clear();
-        isFinished = false;
-        this.puzzle = puzzle;
-        this.heuristic = new ManhattanDistanceWithConflicts(puzzle);
+    public List<Move> solve() {
+        if (isFinished) {
+            return moves;
+        }
         int estimate = heuristic.getEstimate();
         bound = estimate;
-        
+
         long start = System.nanoTime();
-        
+
         while (!(isFinished || bound > testingBound)) {
-//            System.out.println("Etsitään syvyydeltä: " + bound);
             bound = search(null, 0, estimate);
         }
-        
+
         long end = System.nanoTime();
         time = end - start;
-        
+
         moves.reverse();
         return moves;
     }
-    
+
     /**
-     * Metodi palauttaa edelliseen ratkaisuun kuluneen ajan.
+     * Metodi palauttaa ratkaisuun kuluneen ajan.
+     *
      * @return Ratkaisemiseen kulunut aika nanosekunteina
      */
-    public long previousTime() {
+    public long searchTime() {
+        if (!isFinished) {
+            return 0;
+        }
         return time;
     }
 
@@ -87,7 +99,7 @@ public class IDAStar {
             if (puzzle.canMove(move) && lastMove != move.getOpposite()) {
                 puzzle.move(move);
                 Point posOfZero = puzzle.positionOfZero();
-                
+
                 int newEstimate = heuristic.update(estimate, posOfZero.getX(), posOfZero.getY(), posOfZero.getX() - move.getDx(), posOfZero.getY() - move.getDy());
                 newBound = Math.min(newBound, search(move, cost + 1, newEstimate));
 
@@ -99,7 +111,7 @@ public class IDAStar {
                 puzzle.move(move.getOpposite());
             }
         }
-        
+
         return newBound;
     }
 }

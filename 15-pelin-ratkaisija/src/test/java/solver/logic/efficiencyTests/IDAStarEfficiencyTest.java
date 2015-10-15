@@ -1,8 +1,6 @@
 package solver.logic.efficiencyTests;
 
 import solver.logic.algorithms.IDAStar;
-import solver.logic.dataStructures.List;
-import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
 
 public class IDAStarEfficiencyTest {
@@ -16,17 +14,17 @@ public class IDAStarEfficiencyTest {
         this.puzzles = new ExamplePuzzles();
     }
 
-    public long test15Puzzle(int n, int size) {
-        idastar = new IDAStar();
-        long sum = 0;
-
-        for (int i = 0; i < n; i++) {
-            idastar.solve(puzzles.getPuzzle(size));
-            sum += idastar.previousTime();
-        }
-
-        return sum / n;
-    }
+//    public long test15Puzzle(int n, int size) {
+//        idastar = new IDAStar();
+//        long sum = 0;
+//
+//        for (int i = 0; i < n; i++) {
+//            idastar.solve(puzzles.getPuzzle(size));
+//            sum += idastar.searchTime();
+//        }
+//
+//        return sum / n;
+//    }
 
 //    public long testRandom15Puzzles(int n, int bound) {
 //        long sum = 0;

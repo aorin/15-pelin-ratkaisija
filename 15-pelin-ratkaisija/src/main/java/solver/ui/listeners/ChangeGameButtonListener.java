@@ -2,6 +2,7 @@ package solver.ui.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.SwingUtilities;
 import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
 import solver.ui.Window;
@@ -26,6 +27,7 @@ public class ChangeGameButtonListener implements ActionListener {
             puzzle = new Puzzle(generator.generate4x4());
         }
        
-        window.update(puzzle);
+        window.close();
+        SwingUtilities.invokeLater(new Window(puzzle, generator));
     }
 }

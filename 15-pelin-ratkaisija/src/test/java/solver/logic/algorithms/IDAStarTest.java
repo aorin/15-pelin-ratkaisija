@@ -20,22 +20,22 @@ public class IDAStarTest {
 
     @Test
     public void rightNumberOfMoves() {
-        idastar = new IDAStar();
-        List<Move> moves = idastar.solve(new Puzzle(new int[][]{{1, 4, 0}, {2, 5, 7}, {3, 6, 8}}));
+        idastar = new IDAStar(new Puzzle(new int[][]{{1, 4, 0}, {2, 5, 7}, {3, 6, 8}}));
+        List<Move> moves = idastar.solve();
         assertEquals(2, moves.length());
     }
 
     @Test
     public void rightNumberOfMoves2() {
-        idastar = new IDAStar();
-        List<Move> moves = idastar.solve(new Puzzle(new int[][]{{1, 13, 2, 14}, {10, 6, 9, 5}, {15, 3, 12, 0}, {4, 8, 7, 11}}));
+        idastar = new IDAStar(new Puzzle(new int[][]{{1, 13, 2, 14}, {10, 6, 9, 5}, {15, 3, 12, 0}, {4, 8, 7, 11}}));
+        List<Move> moves = idastar.solve();
         assertEquals(35, moves.length());
     }
 
     @Test
     public void rightMoves() {
-        idastar = new IDAStar();
-        List<Move> moves = idastar.solve(new Puzzle(new int[][]{{1, 4, 0}, {2, 5, 7}, {3, 6, 8}}));
+        idastar = new IDAStar(new Puzzle(new int[][]{{1, 4, 0}, {2, 5, 7}, {3, 6, 8}}));
+        List<Move> moves = idastar.solve();
         assertEquals(Move.RIGHT, moves.get(0));
         assertEquals(Move.RIGHT, moves.get(1));
     }
@@ -43,12 +43,12 @@ public class IDAStarTest {
     @Test
     public void rightMoves2() {
         Puzzle puzzle = new Puzzle(generator.generate3x3());
-        while (!determiner.puzzeIsSolvable(puzzle)) {
+        while (!determiner.puzzleIsSolvable(puzzle)) {
             puzzle = new Puzzle(generator.generate3x3());
         }
         Puzzle copy = puzzle.copy();
-        idastar = new IDAStar();
-        List<Move> moves = idastar.solve(puzzle);
+        idastar = new IDAStar(puzzle);
+        List<Move> moves = idastar.solve();
         
         for (int i = 0; i < moves.length(); i++) {
             copy.move(moves.get(i));
