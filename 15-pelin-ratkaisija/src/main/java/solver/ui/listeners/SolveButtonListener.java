@@ -28,6 +28,9 @@ public class SolveButtonListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         window.disableButtons();
+        if (window.getKeyListener() != null) {
+            window.getKeyListener().setEnabled(false);
+        }
 
         Thread thread = new Thread(new Runnable() {
             @Override
