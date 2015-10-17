@@ -14,40 +14,27 @@ import solver.logic.domain.Puzzle;
 import solver.ui.Window;
 import solver.ui.listeners.Mover;
 
+/**
+ * Luokka kuuntelee nappia "Ratkaise".
+ */
 public class SolveButtonListener implements ActionListener {
 
     private App app;
-    private Puzzle puzzle, copy;
+    private Puzzle puzzle;
     private SolvabilityDeterminer solvabilityDeterminer;
     private IDAStar idastar;
     private Window window;
     private Mover mover;
-    private Thread thread;
-    private int heuristicNro;
     private Heuristic heuristic;
 
     public SolveButtonListener(App app, Window window) {
+        this.app = app;
         this.puzzle = app.getPuzzle();
         this.window = window;
         this.solvabilityDeterminer = new SolvabilityDeterminer();
         this.mover = new Mover(window);
-        this.heuristicNro = 0;
     }
     
-    public void changeHeuristic() {
-        if (heuristicNro == 0) {
-            heuristicNro = 1;
-            window.alert("ManhattanDistance käytössä");
-        } else {
-            heuristicNro = 0;
-            window.alert("ManhattanDistanceWithLinearConflicts käytössä");
-        }
-    }
-    
-    public int getHeuristicNro() {
-        return heuristicNro;
-    }
-
     @Override
     public void actionPerformed(ActionEvent ae) {
         window.disableButtons();
@@ -58,16 +45,15 @@ public class SolveButtonListener implements ActionListener {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean solvable = solvabilityDeterminer.puzzleIsSolvable(puzzle);
-
-                if (!solvable) {
+                if (!solvabilityDeterminer.puzzleIsSolvable(puzzle)) {
                     window.alert("Peliä ei ole mahdollista ratkaista.");
-                    window.enableButtonsExceptMover();
+                    window.enableButtons();
+                    window.disableButton(2);
                     return;
                 }
-                
+
                 Puzzle copy = puzzle.copy();
-                if (heuristicNro == 0) {
+                if (app.getHeuresticNro() == 0) {
                     heuristic = new ManhattanDistanceWithConflicts(copy);
                 } else {
                     heuristic = new ManhattanDistance(copy);
@@ -79,9 +65,10 @@ public class SolveButtonListener implements ActionListener {
                 if (moves == null) {
                     window.alert("Ratkaisua ei löytynyt! D:");
                 } else {
-                    window.addKeyListener(moves);
+                    app.setMoves(moves);
+                    window.addKeyListener();
                     window.alert("Siirtojen määrä: " + moves.length() + ", aika: " + (idastar.searchTime() / 1000000.0 / 1000) + " s");
-                    window.enableButtonsExceptMover();
+                    window.enableButtons();
                 }
             }
         });

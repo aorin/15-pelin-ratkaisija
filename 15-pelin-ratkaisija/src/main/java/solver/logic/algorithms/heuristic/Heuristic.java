@@ -3,7 +3,7 @@ package solver.logic.algorithms.heuristic;
 /**
  * Rajapinta heuristisille funktioille.
  * <p>
- * Heuristisen funktion tarkoituksena on arvioida, kunka pitkä
+ * Heurististen funktioiden tarkoituksena on arvioida, kunka pitkä
  * etäisyys lähtötilasta on maalitilaan.
  */
 public interface Heuristic {
@@ -26,10 +26,4 @@ public interface Heuristic {
      * @return Uusi arvio
      */
     public int update(int estimate, int x1, int y1, int x2, int y2);
-    
-    /**
-     * Metodi kertoo, onko peli saavuttanut tavoitetilan.
-     * @return True, jos tavoitetila on saavutettu, muutoin false
-     */
-    public boolean puzzleIsInGoalState();
 }

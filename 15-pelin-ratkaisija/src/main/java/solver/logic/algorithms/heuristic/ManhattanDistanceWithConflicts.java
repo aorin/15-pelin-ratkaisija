@@ -4,7 +4,7 @@ import solver.logic.domain.Puzzle;
 
 /**
  * Luokka sisältää toiminnallisuuden pelin Manhattan-etäisyyden laskemiseen
- * lineaariset törmäyksen mukaan huomioituna.
+ * lineaariset konfliktit mukaan huomioituna.
  */
 public class ManhattanDistanceWithConflicts implements Heuristic {
 
@@ -22,7 +22,7 @@ public class ManhattanDistanceWithConflicts implements Heuristic {
     }
 
     /**
-     * Palauttaa asetelman Manhattan-etäisyyden lineaariset törmäykset
+     * Palauttaa asetelman Manhattan-etäisyyden lineaariset konfliktit
      * huomioituna.
      *
      * @return Peliasetelman Manhattan-etäisyys
@@ -50,14 +50,5 @@ public class ManhattanDistanceWithConflicts implements Heuristic {
         estimate = manhattan.update(estimate, x1, y1, x2, y2);
         estimate += 2 * conflicts.changeBetweenStates(x1, y1, x2, y2);
         return estimate;
-    }
-
-    /**
-     * Metodi kertoo, onko peli saavuttanut tavoitetilan.
-     * @return True, jos tavoitetila on saavutettu, muutoin false
-     */
-    @Override
-    public boolean puzzleIsInGoalState() {
-        return manhattan.puzzleIsInGoalState();
     }
 }

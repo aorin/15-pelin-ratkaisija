@@ -12,7 +12,7 @@ public class SolvabilityDeterminer {
  * Metodi selvittää onko sille parametrinä annettu peli mahdollista ratkaista.
  * 
  * @param puzzle peli, jonka ratkaistavuus halutaan selvittää
- * @return true, jos peli on ratkaistavissa, muulloin false
+ * @return True, jos peli on ratkaistavissa, muulloin false
  */
     public boolean puzzleIsSolvable(Puzzle puzzle) {
         int[] array = copyValuesToOneDimensionalArray(puzzle.values());

@@ -3,7 +3,7 @@ package solver.logic.algorithms.heuristic;
 import solver.logic.domain.Puzzle;
 
 /**
- * Luokka, joka tarjoaa toiminnallisuuden pelin lineaaristen törmäysten
+ * Luokka, joka tarjoaa toiminnallisuuden pelin lineaaristen konfliktien
  * laskemiseen.
  */
 public class LinearConflicts {
@@ -22,17 +22,16 @@ public class LinearConflicts {
     }
 
     /**
-     * Metodi palauttaa kaikki pelissä esiintyneet törmäykset kerrottuna
-     * kahdella.
+     * Metodi palauttaa kaikki pelissä esiintyneet konfliktit.
      *
-     * @return Lineaariset törmäykset
+     * @return Lineaariset konfliktit
      */
     public int getConflicts() {
         return countAllConfilicts();
     }
 
     /**
-     * Metodi kertoo lineaaristen törmäysten muutoksesta jonkun siirron jälkeen.
+     * Metodi kertoo lineaaristen konfliktien muutoksesta jonkun siirron jälkeen.
      *
      * @param x1 Liikutetun palan vanha x-koordinaatti
      * @param y1 Liikutetun palan vanha y-koordinaatti

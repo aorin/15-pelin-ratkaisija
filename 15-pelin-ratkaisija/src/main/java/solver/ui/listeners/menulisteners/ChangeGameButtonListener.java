@@ -6,11 +6,14 @@ import solver.App;
 import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
 
+/**
+ * Luokka kuuntelee nappia, jonka avulla voi vaihtaa erikokoisten pelin välillä.
+ */
 public class ChangeGameButtonListener implements ActionListener {
     private App app;
     private GameboardGenerator generator;
     private int n;
-    
+
     public ChangeGameButtonListener(App app) {
         this.app = app;
         this.generator = app.getGenerator();

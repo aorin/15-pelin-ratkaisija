@@ -8,22 +8,35 @@ import solver.logic.domain.Move;
 import solver.logic.domain.Puzzle;
 import solver.ui.Window;
 
+/**
+ * Luokka sisältää toiminnallisuuden palojen automaattisiirtämiseen.
+ */
 public class Mover implements ActionListener {
 
     private Timer timer;
     private Window window;
     private Puzzle puzzle;
     private List<Move> moves;
-    private int i;
 
+    /**
+     * Konstruktori luo uuden siirtäjän
+     * 
+     * @param window Käytössä oleva ikkuna
+     */
     public Mover(Window window) {
         this.window = window;
     }
 
-    public void move(Puzzle puzzle, List<Move> moves, int i) {
-        this.i = i;
+    /**
+     * Metodi aloittaa palojen siirtämisen.
+     * 
+     * @param puzzle Peli
+     * @param moves Siirrot
+     */
+    public void move(Puzzle puzzle, List<Move> moves) {
         this.puzzle = puzzle;
         this.moves = moves;
+        window.getKeyListener().setEnabled(false);
 
         this.timer = new Timer(300, this);
         this.timer.start();
@@ -31,14 +44,13 @@ public class Mover implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (i < moves.length()) {
-            puzzle.move(moves.get(i));
+        if (moves.getI() < moves.length()) {
+            puzzle.move(moves.get(moves.getI()));
             window.getRenderer().repaint();
-            i++;
+            moves.setI(moves.getI() + 1);
         } else {
             timer.stop();
-            window.getKeyListener().setI(i);
-            window.enableAllButtons();
+            window.enableButtons();
             window.getKeyListener().setEnabled(true);
         }
     }

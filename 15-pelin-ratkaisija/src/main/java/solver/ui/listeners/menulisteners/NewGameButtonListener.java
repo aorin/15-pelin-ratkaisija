@@ -6,6 +6,9 @@ import solver.App;
 import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
 
+/**
+ * Luokka kuuntelee nappia "Uusi".
+ */
 public class NewGameButtonListener implements ActionListener {
     private App app;
     private GameboardGenerator generator;

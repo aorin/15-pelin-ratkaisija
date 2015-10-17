@@ -18,8 +18,7 @@ public class IDAStar {
     private boolean isFinished;
     private Puzzle puzzle;
     private List<Move> moves;
-    private long time;
-    private int testingBound;
+    private long searchTime;
 
     /**
      * Konstruktori luo uuden IDA*-laskijan annetun pelin perusteella.
@@ -32,13 +31,13 @@ public class IDAStar {
         this.puzzle = puzzle;
         this.heuristic = heuristic;
         this.isFinished = false;
-        this.testingBound = 80;
     }
 
     /**
      * Konstruktori luo uuden IDA*-laskijan annetun pelin perusteella.
      * <p>
      * Heuristiikkana algoritmi käyttää ManhattanDistanceWithConflicts-heuristiikkaa.
+     * 
      * @param puzzle Peli, joka halutaan ratkaista
      */
     public IDAStar(Puzzle puzzle) {
@@ -47,8 +46,12 @@ public class IDAStar {
 
     /**
      * Metodi ratkaisee lyhimmän reitin alkutilasta tavoitetilaan.
+     * <p>
+     * Ratkaiseminen toimii iteratiivisesti eli haku etenee kerrallaan vain
+     * tietylle syvyydelle. Algoritmi käyttää apuna heurestiikkaa, jolla se
+     * arvioi tavoitetilaan kuluvien siirtojen määrää.
      *
-     * @return siirrot, joita käytettiin ratkaisun saavuttamiseen
+     * @return Siirrot, joita käytettiin ratkaisun saavuttamiseen
      */
     public List<Move> solve() {
         if (isFinished) {
@@ -59,12 +62,12 @@ public class IDAStar {
 
         long start = System.nanoTime();
 
-        while (!(isFinished || bound > testingBound)) {
+        while (!isFinished) {
             bound = search(null, 0, estimate);
         }
 
         long end = System.nanoTime();
-        time = end - start;
+        searchTime = end - start;
 
         moves.reverse();
         return moves;
@@ -79,7 +82,7 @@ public class IDAStar {
         if (!isFinished) {
             return 0;
         }
-        return time;
+        return searchTime;
     }
 
     private int search(Move lastMove, int cost, int estimate) {
@@ -89,7 +92,7 @@ public class IDAStar {
             return totalCost;
         }
 
-        if (heuristic.puzzleIsInGoalState()) {
+        if (estimate == 0) {
             isFinished = true;
             return bound;
         }

@@ -10,7 +10,6 @@ public class ManhattanDistance implements Heuristic {
 
     private Point[] goalPositions;
     private int[][] values;
-    private boolean isFinished;
 
     /**
      * Konstruktori luo uuden Manhattan-etäisyys-laskijan annetun peliasetelman
@@ -33,7 +32,6 @@ public class ManhattanDistance implements Heuristic {
         }
 
         values = puzzle.values();
-        isFinished = false;
     }
 
     /**
@@ -52,10 +50,6 @@ public class ManhattanDistance implements Heuristic {
                     sum += abs(i - goalPos.getX()) + abs(j - goalPos.getY());
                 }
             }
-        }
-
-        if (sum == 0) {
-            isFinished = true;
         }
 
         return sum;
@@ -77,9 +71,6 @@ public class ManhattanDistance implements Heuristic {
         Point goalPos = goalPositions[values[x2][y2]];
         estimate -= abs(x1 - goalPos.getX()) + abs(y1 - goalPos.getY());
         estimate += abs(x2 - goalPos.getX()) + abs(y2 - goalPos.getY());
-        if (estimate == 0) {
-            isFinished = true;
-        }
         return estimate;
     }
 
@@ -88,15 +79,5 @@ public class ManhattanDistance implements Heuristic {
             return -1 * number;
         }
         return number;
-    }
-
-    /**
-     * Metodi kertoo, onko peli saavuttanut tavoitetilan.
-     *
-     * @return True, jos tavoitetila on saavutettu, muutoin false
-     */
-    @Override
-    public boolean puzzleIsInGoalState() {
-        return isFinished;
     }
 }

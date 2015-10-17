@@ -7,7 +7,7 @@ package solver.logic.dataStructures;
 public class List<T> {
 
     private Object[] array;
-    private int n;
+    private int n, i;
 
     /**
      * Konstruktori luo uuden tyhjän listan.
@@ -15,6 +15,7 @@ public class List<T> {
     public List() {
         array = new Object[10];
         n = 0;
+        i = 0;
     }
 
     /**
@@ -82,5 +83,23 @@ public class List<T> {
             array[i] = array[n - i - 1];
             array[n - i - 1] = value;
         }
+    }
+
+    /**
+     * Palauttaa indeksin.
+     * 
+     * @return Indeksi 
+     */
+    public int getI() {
+        return i;
+    }
+
+    /**
+     * Asettaa listalle indeksin.
+     * 
+     * @param i Indeksi 
+     */
+    public void setI(int i) {
+        this.i = i;
     }
 }

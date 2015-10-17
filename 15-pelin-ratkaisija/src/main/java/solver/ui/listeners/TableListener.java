@@ -7,12 +7,22 @@ import solver.App;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Puzzle;
 
+/**
+ * Luokka tulkitsee taulukkoon tehtyjä muutoksia.
+ */
 public class TableListener implements TableModelListener {
+
     private App app;
     private JTable table;
     private int n;
     private int[][] values;
 
+    /**
+     * Konstruktori luo uuden taulukonkuuntelijan.
+     *
+     * @param app Käytössä oleva ohjelma
+     * @param table Taulukko, jota kuunnellaan
+     */
     public TableListener(App app, JTable table) {
         this.app = app;
         this.table = table;
@@ -25,19 +35,15 @@ public class TableListener implements TableModelListener {
         for (int i = tme.getFirstRow(); i <= tme.getLastRow(); i++) {
             try {
                 values[tme.getColumn()][i] = Integer.parseInt(table.getValueAt(i, tme.getColumn()).toString());
-                if (allValues()) {
-                    if (n == 3) {
-                        app.changePuzzle(new Puzzle(values));
-                    } else {
-                        app.changePuzzle(new Puzzle(values));
-                    }
+                if (hasAllValues()) {
+                    app.changePuzzle(new Puzzle(values));
                 }
             } catch (Exception e) {
             }
         }
     }
 
-    private boolean allValues() {
+    private boolean hasAllValues() {
         List list = new List();
 
         for (int i = 0; i < n; i++) {

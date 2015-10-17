@@ -13,17 +13,14 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 import solver.App;
-import solver.logic.dataStructures.List;
-import solver.logic.domain.Move;
-import solver.logic.domain.Puzzle;
 import solver.ui.listeners.menulisteners.ChangeGameButtonListener;
 import solver.ui.listeners.menulisteners.GiveGameButtonListener;
-import solver.ui.listeners.KeyListener;
 import solver.ui.listeners.menulisteners.MoverButtonListener;
 import solver.ui.listeners.menulisteners.NewGameButtonListener;
 import solver.ui.listeners.menulisteners.SolveButtonListener;
-import solver.ui.listeners.TableListener;
 import solver.ui.listeners.menulisteners.ChangeHeuristicButtonListener;
+import solver.ui.listeners.KeyListener;
+import solver.ui.listeners.TableListener;
 
 /**
  * Luokka luo käyttöliittymäikkunan ja ohjaa sen toimintaa.
@@ -35,16 +32,15 @@ public class Window implements Runnable {
     private JMenuBar menubar;
     private Renderer renderer;
     private Logger logger;
-    private JTextArea textArea;
     private KeyListener keyListener;
     private MoverButtonListener moverListener;
-    private SolveButtonListener solver;
+    
+    private int tileLenght = 100;
 
     /**
-     * Konstruktorissa asetetaan käyttöliittymällä käytössä oleva peli
+     * Konstruktorissa asetetaan käyttöliittymällä käytössä oleva ohjelma
      *
-     * @param puzzle Käytössä oleva peliasetelma
-     * @param generator Uusien peliasetelmien generaattori
+     * @param app 15-pelin-ratkaisija-ohjelma
      */
     public Window(App app) {
         this.app = app;
@@ -59,7 +55,7 @@ public class Window implements Runnable {
         createMenuBar();
         createComponents(frame.getContentPane());
 
-        frame.getContentPane().setPreferredSize(new Dimension(app.getN() * 100 + 1, app.getN() * 100 + 21));
+        frame.getContentPane().setPreferredSize(new Dimension(app.getN() * tileLenght + 1, app.getN() * tileLenght + 21));
         frame.pack();
         frame.setResizable(false);
 
@@ -71,7 +67,7 @@ public class Window implements Runnable {
         menubar = new JMenuBar();
         frame.setJMenuBar(menubar);
 
-        JMenuItem newRandom = new JMenuItem("Uusi");
+        JMenuItem newGame = new JMenuItem("Uusi");
         JMenuItem solve = new JMenuItem("Ratkaise");
         JMenuItem mover = new JMenuItem("Siirtäjä");
         mover.setEnabled(false);
@@ -89,32 +85,23 @@ public class Window implements Runnable {
         others.add(heurestic);
         others.add(giveGame);
 
-        menubar.add(newRandom);
+        menubar.add(newGame);
         menubar.add(solve);
         menubar.add(mover);
         menubar.add(others);
 
-        NewGameButtonListener listener1 = new NewGameButtonListener(app);
-        newRandom.addActionListener(listener1);
-
-        solver = new SolveButtonListener(app, this);
-        solve.addActionListener(solver);
-
-        ChangeGameButtonListener listener3 = new ChangeGameButtonListener(app);
-        changeGame.addActionListener(listener3);
-
-        GiveGameButtonListener listener4 = new GiveGameButtonListener(this);
-        giveGame.addActionListener(listener4);
-
-        ChangeHeuristicButtonListener listener5 = new ChangeHeuristicButtonListener(solver);
-        heurestic.addActionListener(listener5);
+        newGame.addActionListener(new NewGameButtonListener(app));
+        solve.addActionListener(new SolveButtonListener(app, this));
+        changeGame.addActionListener(new ChangeGameButtonListener(app));
+        giveGame.addActionListener(new GiveGameButtonListener(this));
+        heurestic.addActionListener(new ChangeHeuristicButtonListener(app, this));
 
         moverListener = new MoverButtonListener(app, this);
         mover.addActionListener(moverListener);
     }
 
     private void createComponents(Container container) {
-        textArea = new JTextArea();
+        JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setBackground(menubar.getBackground());
         textArea.setPreferredSize(new Dimension(container.getWidth(), 20));
@@ -125,14 +112,17 @@ public class Window implements Runnable {
         logger = new Logger(textArea);
     }
 
+    /**
+     * Metodi palauttaa käytössä olevan piirtäjän.
+     * 
+     * @return Piirtäjä 
+     */
     public Renderer getRenderer() {
         return renderer;
     }
 
     /**
-     * Metodi päivittää käyttöliittymän vastaamaan metodina annettua pelitilaa.
-     *
-     * @param puzzle Uusi käytössä oleva pelitila.
+     * Metodi päivittää käyttöliittymäikkunan vastaamaan ohjelmaa.
      */
     public void update() {
         JMenuBar menu = frame.getJMenuBar();
@@ -146,62 +136,89 @@ public class Window implements Runnable {
         frame.setVisible(true);
     }
 
+    /**
+     * Metodi sulkee ikkunan.
+     */
     public void close() {
         frame.dispose();
     }
 
+    /**
+     * Metodi ilmoittaa käyttäjälle halutun tekstin.
+     * 
+     * @param text Teksti, joka näytetään käyttäjälle 
+     */
     public void alert(String text) {
         logger.log(text);
     }
 
+    /**
+     * Metodi poistaa kaikki valikkonapit käytöstä.
+     */
     public void disableButtons() {
         for (int i = 0; i < 4; i++) {
             disableButton(i);
         }
     }
 
+    /**
+     * Metodi poistaa halutun valikkonapin käytöstä.
+     * 
+     * @param i Poistettavan valikkonapin indeksi
+     */
     public void disableButton(int i) {
         frame.getJMenuBar().getComponent(i).setEnabled(false);
     }
 
-    public void enableButtonsExceptMover() {
+    /**
+     * Metodi laittaa kaikki valikkonapit käytettäviksi.
+     */
+    public void enableButtons() {
         for (int i = 0; i < 4; i++) {
-            if (i != 2) {
-                frame.getJMenuBar().getComponent(i).setEnabled(true);
-            }
+            enableButton(i);
         }
     }
 
-    public void enableAllButtons() {
-        for (int i = 0; i < 4; i++) {
-            frame.getJMenuBar().getComponent(i).setEnabled(true);
-        }
+    /**
+     * Metodi laittaa halutun valikkonapin käytettäväksi.
+     * 
+     * @param i Valikonapin indeksi, joka halutaan laittaa käytettäväksi
+     */
+    public void enableButton(int i) {
+        frame.getJMenuBar().getComponent(i).setEnabled(true);
     }
 
-    public void addKeyListener(List<Move> moves) {
-        keyListener = new KeyListener(this, app.getPuzzle(), moves);
+    /**
+     * Metodi lisää näppäimistönkuuntelijan.
+     */
+    public void addKeyListener() {
+        keyListener = new KeyListener(app, this);
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(keyListener);
-        frame.getJMenuBar().getComponent(3).setEnabled(true);
-        moverListener.setMoves(moves);
     }
 
+    /**
+     * Metodi palauttaa näppäimistönkuuntelijan.
+     * 
+     * @return Näppäimistönkuuntelija
+     */
     public KeyListener getKeyListener() {
         return keyListener;
     }
 
-    private void centreWindow() {
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
-        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
-        frame.setLocation(x, y);
-    }
-
+    /**
+     * Metodi vaihtaa näkymän syötetilaan.
+     */
     public void changeToInputMode() {
-        int n = app.getN();
         disableButton(1);
         disableButton(2);
 
+        frame.getContentPane().remove(renderer);
+        frame.getContentPane().add(getEmptyTable(app.getN()), BorderLayout.CENTER);
+        frame.revalidate();
+    }
+
+    private JTable getEmptyTable(int n) {
         String[][] values = new String[n][n];
         String[] names = new String[n];
         for (int i = 0; i < values.length; i++) {
@@ -213,9 +230,13 @@ public class Window implements Runnable {
         JTable table = new JTable(values, names);
         table.setRowHeight(n * 100 / n);
         table.getModel().addTableModelListener(new TableListener(app, table));
+        return table;
+    }
 
-        frame.getContentPane().remove(renderer);
-        frame.getContentPane().add(table, BorderLayout.CENTER);
-        frame.revalidate();
+    private void centreWindow() {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
     }
 }

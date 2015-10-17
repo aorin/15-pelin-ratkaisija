@@ -30,6 +30,11 @@ public enum Move {
         return this.dy;
     }
     
+    /**
+     * Metodi palauttaa kyseisen siirron vastakkaisen siirron.
+     * 
+     * @return Vastakkainen siirto 
+     */
     public Move getOpposite() {
         return this.opposite;
     }
