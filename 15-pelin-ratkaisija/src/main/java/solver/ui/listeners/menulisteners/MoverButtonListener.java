@@ -1,11 +1,13 @@
-package solver.ui.listeners;
+package solver.ui.listeners.menulisteners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import solver.App;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
 import solver.logic.domain.Puzzle;
 import solver.ui.Window;
+import solver.ui.listeners.Mover;
 
 public class MoverButtonListener implements ActionListener {
 
@@ -14,10 +16,10 @@ public class MoverButtonListener implements ActionListener {
     private Puzzle puzzle;
     private List<Move> moves;
 
-    public MoverButtonListener(Window window, Puzzle puzzle) {
+    public MoverButtonListener(App app, Window window) {
         this.mover = new Mover(window);
         this.window = window;
-        this.puzzle = puzzle;
+        this.puzzle = app.getPuzzle();
     }
 
     public void setMoves(List<Move> moves) {

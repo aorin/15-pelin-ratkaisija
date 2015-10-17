@@ -6,34 +6,39 @@ import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+import solver.App;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
 import solver.logic.domain.Puzzle;
-import solver.logic.util.GameboardGenerator;
-import solver.ui.listeners.ChangeGameButtonListener;
+import solver.ui.listeners.menulisteners.ChangeGameButtonListener;
+import solver.ui.listeners.menulisteners.GiveGameButtonListener;
 import solver.ui.listeners.KeyListener;
-import solver.ui.listeners.MoverButtonListener;
-import solver.ui.listeners.NewGameButtonListener;
-import solver.ui.listeners.SolveButtonListener;
+import solver.ui.listeners.menulisteners.MoverButtonListener;
+import solver.ui.listeners.menulisteners.NewGameButtonListener;
+import solver.ui.listeners.menulisteners.SolveButtonListener;
+import solver.ui.listeners.TableListener;
+import solver.ui.listeners.menulisteners.ChangeHeuristicButtonListener;
 
 /**
  * Luokka luo käyttöliittymäikkunan ja ohjaa sen toimintaa.
  */
 public class Window implements Runnable {
 
-    private GameboardGenerator generator;
+    private App app;
     private JFrame frame;
-    private Puzzle puzzle;
     private JMenuBar menubar;
     private Renderer renderer;
     private Logger logger;
     private JTextArea textArea;
     private KeyListener keyListener;
     private MoverButtonListener moverListener;
+    private SolveButtonListener solver;
 
     /**
      * Konstruktorissa asetetaan käyttöliittymällä käytössä oleva peli
@@ -41,9 +46,8 @@ public class Window implements Runnable {
      * @param puzzle Käytössä oleva peliasetelma
      * @param generator Uusien peliasetelmien generaattori
      */
-    public Window(Puzzle puzzle, GameboardGenerator generator) {
-        this.puzzle = puzzle;
-        this.generator = generator;
+    public Window(App app) {
+        this.app = app;
     }
 
     @Override
@@ -55,8 +59,7 @@ public class Window implements Runnable {
         createMenuBar();
         createComponents(frame.getContentPane());
 
-        frame.getContentPane().setPreferredSize(new Dimension(puzzle.n() * 100 + 1, puzzle.n() * 100 + 21));
-
+        frame.getContentPane().setPreferredSize(new Dimension(app.getN() * 100 + 1, app.getN() * 100 + 21));
         frame.pack();
         frame.setResizable(false);
 
@@ -68,38 +71,45 @@ public class Window implements Runnable {
         menubar = new JMenuBar();
         frame.setJMenuBar(menubar);
 
-        JMenuItem newGame = new JMenuItem("Uusi");
+        JMenuItem newRandom = new JMenuItem("Uusi");
         JMenuItem solve = new JMenuItem("Ratkaise");
-        JMenuItem changeGame = new JMenuItem();
-//        JMenuItem giveGame = new JMenuItem("Syötä uusi");
-
         JMenuItem mover = new JMenuItem("Siirtäjä");
         mover.setEnabled(false);
 
-        if (puzzle.values().length == 4) {
+        JMenu others = new JMenu("Muut");
+        JMenuItem changeGame = new JMenuItem();
+        if (app.getN() == 4) {
             changeGame.setText("8-peli");
         } else {
             changeGame.setText("15-peli");
         }
+        JMenuItem heurestic = new JMenuItem("Vaihda heurestiikkaa");
+        JMenuItem giveGame = new JMenuItem("Syötä uusi");
+        others.add(changeGame);
+        others.add(heurestic);
+        others.add(giveGame);
 
-        menubar.add(newGame);
+        menubar.add(newRandom);
         menubar.add(solve);
-        menubar.add(changeGame);
         menubar.add(mover);
-//        menubar.add(giveGame);
+        menubar.add(others);
 
-        NewGameButtonListener listener1 = new NewGameButtonListener(this, generator, puzzle.n());
-        newGame.addActionListener(listener1);
+        NewGameButtonListener listener1 = new NewGameButtonListener(app);
+        newRandom.addActionListener(listener1);
 
-        SolveButtonListener listener2 = new SolveButtonListener(this, puzzle);
-        solve.addActionListener(listener2);
+        solver = new SolveButtonListener(app, this);
+        solve.addActionListener(solver);
 
-        ChangeGameButtonListener listener3 = new ChangeGameButtonListener(this, generator, puzzle.n());
+        ChangeGameButtonListener listener3 = new ChangeGameButtonListener(app);
         changeGame.addActionListener(listener3);
 
-//        GiveGameButtonListener listener4 = new GiveGameButtonListener(puzzle);
-//        giveGame.addActionListener(listener4);
-        moverListener = new MoverButtonListener(this, puzzle);
+        GiveGameButtonListener listener4 = new GiveGameButtonListener(this);
+        giveGame.addActionListener(listener4);
+
+        ChangeHeuristicButtonListener listener5 = new ChangeHeuristicButtonListener(solver);
+        heurestic.addActionListener(listener5);
+
+        moverListener = new MoverButtonListener(app, this);
         mover.addActionListener(moverListener);
     }
 
@@ -109,7 +119,7 @@ public class Window implements Runnable {
         textArea.setBackground(menubar.getBackground());
         textArea.setPreferredSize(new Dimension(container.getWidth(), 20));
         container.add(textArea, BorderLayout.SOUTH);
-        renderer = new Renderer(puzzle, 100);
+        renderer = new Renderer(app.getPuzzle(), 100);
         container.add(renderer, BorderLayout.CENTER);
 
         logger = new Logger(textArea);
@@ -124,9 +134,7 @@ public class Window implements Runnable {
      *
      * @param puzzle Uusi käytössä oleva pelitila.
      */
-    public void update(Puzzle puzzle) {
-        this.puzzle = puzzle;
-
+    public void update() {
         JMenuBar menu = frame.getJMenuBar();
         menu.removeAll();
         createMenuBar();
@@ -148,13 +156,19 @@ public class Window implements Runnable {
 
     public void disableButtons() {
         for (int i = 0; i < 4; i++) {
-            frame.getJMenuBar().getComponent(i).setEnabled(false);
+            disableButton(i);
         }
     }
 
-    public void enableButtons() {
-        for (int i = 0; i < 3; i++) {
-            frame.getJMenuBar().getComponent(i).setEnabled(true);
+    public void disableButton(int i) {
+        frame.getJMenuBar().getComponent(i).setEnabled(false);
+    }
+
+    public void enableButtonsExceptMover() {
+        for (int i = 0; i < 4; i++) {
+            if (i != 2) {
+                frame.getJMenuBar().getComponent(i).setEnabled(true);
+            }
         }
     }
 
@@ -165,7 +179,7 @@ public class Window implements Runnable {
     }
 
     public void addKeyListener(List<Move> moves) {
-        keyListener = new KeyListener(this, puzzle, moves);
+        keyListener = new KeyListener(this, app.getPuzzle(), moves);
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(keyListener);
         frame.getJMenuBar().getComponent(3).setEnabled(true);
@@ -181,5 +195,27 @@ public class Window implements Runnable {
         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
         frame.setLocation(x, y);
+    }
+
+    public void changeToInputMode() {
+        int n = app.getN();
+        disableButton(1);
+        disableButton(2);
+
+        String[][] values = new String[n][n];
+        String[] names = new String[n];
+        for (int i = 0; i < values.length; i++) {
+            names[i] = "";
+            for (int j = 0; j < values.length; j++) {
+                values[i][j] = "";
+            }
+        }
+        JTable table = new JTable(values, names);
+        table.setRowHeight(n * 100 / n);
+        table.getModel().addTableModelListener(new TableListener(app, table));
+
+        frame.getContentPane().remove(renderer);
+        frame.getContentPane().add(table, BorderLayout.CENTER);
+        frame.revalidate();
     }
 }

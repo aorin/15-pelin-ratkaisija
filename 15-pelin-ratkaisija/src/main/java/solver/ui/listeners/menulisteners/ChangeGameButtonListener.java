@@ -1,21 +1,20 @@
-package solver.ui.listeners;
+package solver.ui.listeners.menulisteners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.SwingUtilities;
+import solver.App;
 import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
-import solver.ui.Window;
 
 public class ChangeGameButtonListener implements ActionListener {
-    private Window window;
+    private App app;
     private GameboardGenerator generator;
     private int n;
     
-    public ChangeGameButtonListener(Window window, GameboardGenerator generator, int n) {
-        this.window = window;
-        this.generator = generator;
-        this.n = n;
+    public ChangeGameButtonListener(App app) {
+        this.app = app;
+        this.generator = app.getGenerator();
+        this.n = app.getN();
     }
     
     @Override
@@ -27,7 +26,6 @@ public class ChangeGameButtonListener implements ActionListener {
             puzzle = new Puzzle(generator.generate4x4());
         }
        
-        window.close();
-        SwingUtilities.invokeLater(new Window(puzzle, generator));
+        app.changePuzzleAndSize(puzzle);
     }
 }

@@ -1,28 +1,51 @@
-package solver.ui.listeners;
+package solver.ui.listeners.menulisteners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import solver.App;
 import solver.logic.algorithms.IDAStar;
 import solver.logic.algorithms.SolvabilityDeterminer;
+import solver.logic.algorithms.heuristic.Heuristic;
+import solver.logic.algorithms.heuristic.ManhattanDistance;
+import solver.logic.algorithms.heuristic.ManhattanDistanceWithConflicts;
 import solver.logic.dataStructures.List;
 import solver.logic.domain.Move;
 import solver.logic.domain.Puzzle;
 import solver.ui.Window;
+import solver.ui.listeners.Mover;
 
 public class SolveButtonListener implements ActionListener {
 
-    private Puzzle puzzle;
+    private App app;
+    private Puzzle puzzle, copy;
     private SolvabilityDeterminer solvabilityDeterminer;
     private IDAStar idastar;
     private Window window;
     private Mover mover;
     private Thread thread;
+    private int heuristicNro;
+    private Heuristic heuristic;
 
-    public SolveButtonListener(Window window, Puzzle puzzle) {
-        this.puzzle = puzzle;
+    public SolveButtonListener(App app, Window window) {
+        this.puzzle = app.getPuzzle();
         this.window = window;
         this.solvabilityDeterminer = new SolvabilityDeterminer();
         this.mover = new Mover(window);
+        this.heuristicNro = 0;
+    }
+    
+    public void changeHeuristic() {
+        if (heuristicNro == 0) {
+            heuristicNro = 1;
+            window.alert("ManhattanDistance käytössä");
+        } else {
+            heuristicNro = 0;
+            window.alert("ManhattanDistanceWithLinearConflicts käytössä");
+        }
+    }
+    
+    public int getHeuristicNro() {
+        return heuristicNro;
     }
 
     @Override
@@ -39,12 +62,17 @@ public class SolveButtonListener implements ActionListener {
 
                 if (!solvable) {
                     window.alert("Peliä ei ole mahdollista ratkaista.");
-                    window.enableButtons();
+                    window.enableButtonsExceptMover();
                     return;
                 }
-
+                
                 Puzzle copy = puzzle.copy();
-                idastar = new IDAStar(copy);
+                if (heuristicNro == 0) {
+                    heuristic = new ManhattanDistanceWithConflicts(copy);
+                } else {
+                    heuristic = new ManhattanDistance(copy);
+                }
+                idastar = new IDAStar(copy, heuristic);
 
                 window.alert("Ratkaistaan peliä...");
                 List<Move> moves = idastar.solve();
@@ -52,8 +80,8 @@ public class SolveButtonListener implements ActionListener {
                     window.alert("Ratkaisua ei löytynyt! D:");
                 } else {
                     window.addKeyListener(moves);
-                    window.alert("Ratkaisu löytyi! Siirtojen määrä: " + moves.length());
-                    window.enableButtons();
+                    window.alert("Siirtojen määrä: " + moves.length() + ", aika: " + (idastar.searchTime() / 1000000.0 / 1000) + " s");
+                    window.enableButtonsExceptMover();
                 }
             }
         });
