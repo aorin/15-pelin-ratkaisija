@@ -72,4 +72,22 @@ public class LinearConflictsTest {
         Point zero = puzzle.positionOfZero();
         assertEquals(1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX(), zero.getY() - 1));
     }
+
+    @Test
+    public void updatesCorrectly4() {
+        puzzle = new Puzzle(new int[][]{{3, 5, 4}, {2, 8, 0}, {1, 6, 7}});
+        calculator = new LinearConflicts(puzzle);
+        puzzle.move(Move.UP);
+        Point zero = puzzle.positionOfZero();
+        assertEquals(1, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX(), zero.getY() + 1));
+    }
+
+    @Test
+    public void updatesCorrectly5() {
+        puzzle = new Puzzle(new int[][]{{1, 5, 7}, {2, 6, 8}, {3, 0, 4}});
+        calculator = new LinearConflicts(puzzle);
+        puzzle.move(Move.DOWN);
+        Point zero = puzzle.positionOfZero();
+        assertEquals(2, calculator.changeBetweenStates(zero.getX(), zero.getY(), zero.getX(), zero.getY() - 1));
+    }
 }

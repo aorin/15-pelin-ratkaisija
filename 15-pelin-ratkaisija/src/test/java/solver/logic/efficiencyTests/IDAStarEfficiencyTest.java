@@ -1,6 +1,9 @@
 package solver.logic.efficiencyTests;
 
 import solver.logic.algorithms.IDAStar;
+import solver.logic.algorithms.heuristic.ManhattanDistance;
+import solver.logic.algorithms.heuristic.ManhattanDistanceWithConflicts;
+import solver.logic.domain.Puzzle;
 import solver.logic.util.GameboardGenerator;
 
 public class IDAStarEfficiencyTest {
@@ -14,51 +17,55 @@ public class IDAStarEfficiencyTest {
         this.puzzles = new ExamplePuzzles();
     }
 
-//    public long test15Puzzle(int n, int size) {
-//        idastar = new IDAStar();
-//        long sum = 0;
-//
-//        for (int i = 0; i < n; i++) {
-//            idastar.solve(puzzles.getPuzzle(size));
-//            sum += idastar.searchTime();
-//        }
-//
-//        return sum / n;
-//    }
+    public long test15PuzzleManhattan(int n, int size) {
+        long sum = 0;
 
-//    public long testRandom15Puzzles(int n, int bound) {
-//        long sum = 0;
-//
-//        for (int i = 0; i < n; i++) {
-//            idastar = new IDAStar(new Puzzle(generator.generate4x4()), bound);
-//            sum += testSolving();
-//        }
-//
-//        return sum / n;
-//    }
-//
-//    public long testRandom8Puzzles(int n, int bound) {
-//        long sum = 0;
-//
-//        for (int i = 0; i < n; i++) {
-//            idastar = new IDAStar(new Puzzle(generator.generate3x3()), bound);
-//            sum += testSolving();
-//        }
-//
-//        return sum / n;
-//    }
-//    private long testSolving() {
-//        long start, end;
-//
-//        while (true) {
-//            start = System.nanoTime();
-//            List list = idastar.solve();
-//            end = System.nanoTime();
-//            if (list != null) {
-//                break;
-//            }
-//        }
-//
-//        return end - start;
-//    }
+        for (int i = 0; i < n; i++) {
+            Puzzle p = puzzles.get15Puzzle(size).copy();
+            idastar = new IDAStar(p, new ManhattanDistance(p));
+            idastar.solve();
+            sum += idastar.searchTime();
+        }
+
+        return sum / n;
+    }
+
+    public long test15PuzzleManhattanWithConflicts(int n, int size) {
+        long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            Puzzle p = puzzles.get15Puzzle(size).copy();
+            idastar = new IDAStar(p, new ManhattanDistanceWithConflicts(p));
+            idastar.solve();
+            sum += idastar.searchTime();
+        }
+
+        return sum / n;
+    }
+
+    public long test8PuzzleManhattan(int n, int size) {
+        long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            Puzzle p = puzzles.get8Puzzle(size).copy();
+            idastar = new IDAStar(p, new ManhattanDistance(p));
+            idastar.solve();
+            sum += idastar.searchTime();
+        }
+
+        return sum / n;
+    }
+
+    public long test8PuzzleManhattanWithConflicts(int n, int size) {
+        long sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            Puzzle p = puzzles.get8Puzzle(size).copy();
+            idastar = new IDAStar(p, new ManhattanDistanceWithConflicts(p));
+            idastar.solve();
+            sum += idastar.searchTime();
+        }
+
+        return sum / n;
+    }
 }

@@ -5,35 +5,43 @@ import org.junit.Test;
 public class EfficiencyTester {
 
     private IDAStarEfficiencyTest idastarTest;
+    private SolvabilityDeterminerEfficiencyTest solvabilityDeterminerTest;
     private ListEfficiencyTest listTest;
 
     public EfficiencyTester() {
         this.idastarTest = new IDAStarEfficiencyTest();
+        this.solvabilityDeterminerTest = new SolvabilityDeterminerEfficiencyTest();
         this.listTest = new ListEfficiencyTest();
     }
-    
+
     @Test
-    public void testIDAStar15() {
+    public void testIDAStar() {
         System.out.println("");
         System.out.println("IDAStarin suorituskykytestaus");
         System.out.println("");
-        
-        for (int i = 40; i <= 60; i += 5) {
-//            System.out.println(i + " kokoiseen 15-pelin ratkaisemiseen kului aikaa " + idastarTest.test15Puzzle(10, i) + " ns.");
+
+//        for (int i = 40; i <= 60; i += 5) {
+//            System.out.println(i + " kokoiseen 15-pelin ratkaisemiseen kului aikaa " + (idastarTest.test15PuzzleManhattan(10, i) / 1000000.0 / 1000) + " s.");
+//            System.out.println("Konfliktit mukaan huomioituna " + (idastarTest.test15PuzzleManhattanWithConflicts(10, i) / 1000000.0 / 1000) + " s.");
+//            System.out.println("");
+//        }
+        for (int i = 16; i <= 26; i += 2) {
+            System.out.println(i + " kokoiseen 8-pelin ratkaisemiseen kului aikaa " + (idastarTest.test8PuzzleManhattan(10000, i) / 1000000.0) + " ms.");
+            System.out.println("Konfliktit mukaan huomioituna " + (idastarTest.test8PuzzleManhattanWithConflicts(10000, i) / 1000000.0) + " ms.");
+            System.out.println("");
         }
-        
+
         System.out.println("");
     }
 
     @Test
-    public void testIDASTarRandom15() {
-//        long under56 = idastarTest.testRandom15Puzzles(1, 55);
-//        long under61 = idastarTest.testRandom15Puzzles(1, 60);
-//        
-//        System.out.println("");
-//        System.out.println("Satunnaisten pelien ratkaisemiseen kuluva aika (15-peli):");
-//        System.out.println("55 ja alle siirtoa: " + under56 + " ns.");
-//        System.out.println("60 ja alle siirtoa: " + under61 + " ns.");
+    public void testSolvabilityDeterminer() {
+        System.out.println("");
+        System.out.println("Ratkaistavuuden selvittämisen testaus");
+        System.out.println("");
+        System.out.println("8-pelin ratkaistavuus selvitettään keskimäärin ajassa " + (solvabilityDeterminerTest.test8Puzzle(1000) / 1000000.0) + " ms.");
+        System.out.println("15-pelin ratkaistavuus selvitettään keskimäärin ajassa " + (solvabilityDeterminerTest.test15Puzzle(1000) / 1000000.0) + " ms.");
+        System.out.println("");
     }
 
     @Test

@@ -12,10 +12,10 @@ Pelin ratkaistavuus voidaan selvittää käyttämällä algoritmia, joka laskee 
 #### IDA* (Iterative Deepening A Star)
 IDA* on polunhakualgoritmi, jonka avulla voidaan löytää pienin määrä siirtoja alkuasetelmasta ratkaisuun. Jokainen erilainen pelitilanne voidaan nähdä solmuna ja mahdolliset siirtymät tilojen välillä kaarina, jolloin tilannetta voidaan mallintaa verkkona. Ratkaisuun vievien siirtojen määrän arvioimiseen tarvitaan jonkinlaista heuristista funktiota, kuten Manhattan distance -funktiota.
 ### Tietorakenteet
-IDA*:n toteutuksen apuna tarvitaan joukkoa ja minimikekoa. 
+IDA*:n toteutuksen apuna tarvitaan joukkoa. 
 
 ## Aika- ja tilavaativuudet
-IDA*:n ja samalla koko algoritmin tilavaativuus on lineaarinen, O(bd), missä b on ratkaisupuun haarojen määrä ja d on ratkaisusolmun korkeus. Aikavaativuus on eksponentiaalinen.
+IDA*:n ja samalla koko algoritmin tilavaativuus on O(bd), missä b on ratkaisupuun haarojen määrä ja d on ratkaisusolmun korkeus. 15-pelin lyhimmän ratkaisun löytäminen on NP-vaikea tehtävä, joten aikavaativuus tulee olemaan korkea.
 
 ## Lähteet
 https://en.wikipedia.org/wiki/15_puzzle

@@ -10,6 +10,8 @@ public class LinearConflicts {
 
     private int n;
     private int[][] values;
+    private boolean[][] numberShouldBeInColumn;
+    private boolean[][] numberShouldBeInRow;
 
     /**
      * Konstruktori luo uuden laskijan annetun pelin avulla.
@@ -19,6 +21,10 @@ public class LinearConflicts {
     public LinearConflicts(Puzzle puzzle) {
         this.n = puzzle.n();
         this.values = puzzle.values();
+        this.numberShouldBeInColumn = new boolean[n][n * n];
+        this.numberShouldBeInRow = new boolean[n][n * n];
+        checkRows();
+        checkColumns();
     }
 
     /**
@@ -31,7 +37,8 @@ public class LinearConflicts {
     }
 
     /**
-     * Metodi kertoo lineaaristen konfliktien muutoksesta jonkun siirron jälkeen.
+     * Metodi kertoo lineaaristen konfliktien muutoksesta jonkun siirron
+     * jälkeen.
      *
      * @param x1 Liikutetun palan vanha x-koordinaatti
      * @param y1 Liikutetun palan vanha y-koordinaatti
@@ -43,7 +50,7 @@ public class LinearConflicts {
         int change = 0;
         int value = values[x2][y2];
         values[x1][y1] = value;
-        
+
         if (x1 != x2) {
             change += columnConflicts(x1);
             change -= columnConflicts(x2);
@@ -60,7 +67,7 @@ public class LinearConflicts {
             change += rowConflicts(y2);
         }
         values[x2][y2] = value;
-        
+
         return -change;
     }
 
@@ -75,14 +82,37 @@ public class LinearConflicts {
         return conflicts;
     }
 
+    private void checkRows() {
+        for (int row = 0; row < n; row++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 1 + n * row; j < 1 + n * row + n; j++) {
+                    if (j != n * n) {
+                        numberShouldBeInRow[row][j] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkColumns() {
+        for (int col = 0; col < n; col++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 1 + col; j < n * n - 1 + col; j += n) {
+                    if (j != n * n) {
+                        numberShouldBeInColumn[col][j] = true;
+                    }
+                }
+            }
+        }
+
+    }
+
     private int rowConflicts(int row) {
-        int[] positions = new int[n + 1];
+        int[] positions = new int[n];
 
         for (int i = 0; i < n; i++) {
-            for (int j = 1 + n * row; j < 1 + n * row + n; j++) {
-                if (values[i][row] == j) {
-                    positions[i + 1] = j - n * row;
-                }
+            if (numberShouldBeInRow[row][values[i][row]]) {
+                positions[i] = values[i][row];
             }
         }
 
@@ -91,13 +121,11 @@ public class LinearConflicts {
     }
 
     private int columnConflicts(int col) {
-        int[] positions = new int[n + 1];
+        int[] positions = new int[n];
 
         for (int i = 0; i < n; i++) {
-            for (int j = 1 + col, k = 1; j < n * n - 1 + col; j += n, k++) {
-                if (values[col][i] == j) {
-                    positions[i + 1] = k;
-                }
+            if (numberShouldBeInColumn[col][values[col][i]]) {
+                positions[i] = values[col][i];
             }
         }
 
@@ -108,7 +136,7 @@ public class LinearConflicts {
     private int countInversions(int[] array) {
         int inversions = 0;
 
-        for (int i = 1; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (array[i] != 0) {
                 for (int j = i + 1; j < array.length; j++) {
                     if (array[j] != 0 && array[j] < array[i]) {
