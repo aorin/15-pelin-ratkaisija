@@ -1,0 +1,9 @@
+solver
+solver.logic.algorithms
+solver.logic.algorithms.heuristic
+solver.logic.dataStructures
+solver.logic.domain
+solver.logic.util
+solver.ui
+solver.ui.listeners
+solver.ui.listeners.menulisteners
